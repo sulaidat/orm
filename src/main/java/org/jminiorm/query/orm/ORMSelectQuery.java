@@ -17,6 +17,8 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
     private Integer limit;
     private Integer offset;
     private String orderBy;
+    private String groupBy;
+    private String having;
 
     public ORMSelectQuery(IQueryTarget target) {
         super(target);
@@ -65,6 +67,18 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
     }
 
     @Override
+    public IORMSelectQuery<T> groupBy(String groupBy) {
+        this.groupBy = groupBy;
+        return this;
+    }
+
+    @Override
+    public IORMSelectQuery<T> having(String having) {
+        this.having = having;
+        return this;
+    }
+
+    @Override
     public T one() throws UnexpectedNumberOfItemsException, DBException {
         return getResultSet().one();
     }
@@ -105,7 +119,7 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
         }
 
         // Generate sql :
-        return getQueryTarget().getConfig().getDialect().sqlForSelect(getMapping().getSchema(), columns, table, where, orderBy);
+        return getQueryTarget().getConfig().getDialect().sqlForSelectWhereOrderBy(getMapping().getSchema(), columns, table, where, orderBy);
     }
 
 }

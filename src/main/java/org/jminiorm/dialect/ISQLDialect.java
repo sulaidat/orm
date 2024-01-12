@@ -20,7 +20,9 @@ public interface ISQLDialect {
 
     String sqlForSelect(String sql, Integer limit, Integer offset);
 
-    String sqlForSelect(String schema, List<String> columns, String table, String where, String orderBy);
+    String sqlForSelectWhere(String schema, List<String> columns, String table, String where);
+
+    String sqlForSelectWhereOrderBy(String schema, List<String> columns, String table, String where, String orderBy);
 
     String sqlForCreateTable(ORMapping mapping);
 

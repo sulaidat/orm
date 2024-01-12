@@ -54,4 +54,8 @@ public interface IORMSelectQuery<T> extends IORMQuery<T>, IObjectResultSet<T> {
      */
     IORMSelectQuery<T> orderBy(String orderBy);
 
+    IORMSelectQuery<T> groupBy(String groupBy);
+
+    IORMSelectQuery<T> having(String having);
+
 }
