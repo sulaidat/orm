@@ -14,9 +14,8 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
 
     private String where;
     private List<Object> params = new ArrayList<>();
-    private Integer limit;
-    private Integer offset;
-    private String orderBy;
+    private String groupBy;
+    private String having;
 
     public ORMSelectQuery(IQueryTarget target) {
         super(target);
@@ -35,6 +34,16 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
     }
 
     @Override
+    public IORMSelectQuery<T> groupBy(String groupBy) {
+        return this;
+    }
+
+    @Override
+    public IORMSelectQuery<T> having(String having, Object... params) {
+        return this;
+    }
+
+    @Override
     public IORMSelectQuery<T> id(Object id) {
         // Sets the parameters as the id :
         params = new ArrayList<>();
@@ -47,26 +56,10 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
     }
 
     @Override
-    public IORMSelectQuery<T> limit(Integer limit) {
-        this.limit = limit;
-        return this;
-    }
-
-    @Override
-    public IORMSelectQuery<T> offset(Integer offset) {
-        this.offset = offset;
-        return this;
-    }
-
-    @Override
-    public IORMSelectQuery<T> orderBy(String orderBy) {
-        this.orderBy = orderBy;
-        return this;
-    }
-
-    @Override
     public T one() throws UnexpectedNumberOfItemsException, DBException {
-        return getResultSet().one();
+        IObjectResultSet<T> res = getResultSet();
+        return res.one();
+//        return getResultSet().one();
     }
 
     @Override
@@ -85,8 +78,7 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
      * @return
      */
     protected IObjectResultSet<T> getResultSet() {
-        return getQueryTarget().select(getSQL(), params.toArray()).limit(limit).offset(offset).asObject
-                (getTargetClass());
+        return getQueryTarget().select(buildSQL(), params.toArray()).toObject(getTargetClass());
     }
 
     /**
@@ -94,7 +86,7 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
      *
      * @return
      */
-    protected String getSQL() {
+    protected String buildSQL() {
         // The table to select from :
         String table = getMapping().getTable();
 
@@ -105,7 +97,8 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
         }
 
         // Generate sql :
-        return getQueryTarget().getConfig().getDialect().sqlForSelect(getMapping().getSchema(), columns, table, where, orderBy);
+        return getQueryTarget().getConfig().getDialect().sqlForSelect(getMapping().getSchema(), columns, table, where
+                , null);
     }
 
 }

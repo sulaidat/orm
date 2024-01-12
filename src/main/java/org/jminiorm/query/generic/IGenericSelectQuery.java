@@ -21,22 +21,6 @@ public interface IGenericSelectQuery extends IGenericQuery {
     IGenericSelectQuery sql(String sql, Object... params);
 
     /**
-     * Sets the limit and returns this.
-     *
-     * @param limit
-     * @return
-     */
-    IGenericSelectQuery limit(Integer limit);
-
-    /**
-     * Sets the offset and returns this.
-     *
-     * @param offset
-     * @return
-     */
-    IGenericSelectQuery offset(Integer offset);
-
-    /**
      * Returns the result set as objects of primitive type T.
      *
      * @param clazz
@@ -64,6 +48,6 @@ public interface IGenericSelectQuery extends IGenericQuery {
      *
      * @return
      */
-    <T> IObjectResultSet<T> asObject(Class<T> clazz);
+    <T> IObjectResultSet<T> toObject(Class<T> clazz);
 
 }

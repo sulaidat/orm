@@ -22,6 +22,9 @@ public interface ISQLDialect {
 
     String sqlForSelect(String schema, List<String> columns, String table, String where, String orderBy);
 
+//    String sqlForSelect(String schema, List<String> columns, String table, String where, String groupBy, String
+//    having);
+
     String sqlForCreateTable(ORMapping mapping);
 
     String sqlForDropTable(ORMapping mapping);
