@@ -6,7 +6,7 @@ import org.jminiorm.mapping.ColumnMapping;
 import org.jminiorm.mapping.JPAORMapping;
 import org.jminiorm.mapping.ORMapping;
 import org.junit.jupiter.api.Test;
-
+import java.lang.Integer;
 import javax.persistence.*;
 import java.util.List;
 
