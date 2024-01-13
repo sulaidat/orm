@@ -1,9 +1,6 @@
 package org.jminiorm;
 
-import org.jminiorm.crud.IInsertQuery;
-import org.jminiorm.crud.ISelectQuery;
-import org.jminiorm.crud.ITableQuery;
-import org.jminiorm.crud.IUpdateQuery;
+import org.jminiorm.crud.*;
 import org.jminiorm.exception.DBException;
 import org.jminiorm.query.generic.IGenericDeleteQuery;
 import org.jminiorm.query.generic.IGenericInsertQuery;
@@ -19,7 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public interface IQueryTarget extends ISelectQuery, IInsertQuery, IUpdateQuery, ITableQuery {
+public interface IQueryTarget extends ISelectQuery, IInsertQuery, IUpdateQuery, ITableQuery, IDeleteQuery {
 
     Connection getConnection() throws DBException;
 
