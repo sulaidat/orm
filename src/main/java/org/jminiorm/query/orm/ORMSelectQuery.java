@@ -112,7 +112,7 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
         }
 
         // Generate sql :
-        return getQueryTarget().getConfig().getDialect().sqlForSelect(getMapping().getSchema(), columns, tableName, where
-                ,null);
+        return getQueryTarget().getConfig().getDialect().sqlForSelect(getMapping().getSchema(), columns, tableName,
+                where, groupBy, having);
     }
 }
