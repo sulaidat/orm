@@ -114,6 +114,7 @@ public class TestQueries {
 
     private void testORMQueries(IDatabase db) throws Exception {
         db.delete(Bean.class).where("1=1");
+        db.getConfig();
 
         // Insert :
         Bean b1 = new Bean();
