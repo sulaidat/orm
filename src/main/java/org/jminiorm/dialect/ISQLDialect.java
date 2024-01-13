@@ -24,13 +24,16 @@ public interface ISQLDialect {
 
     String sqlForSelectWhereOrderBy(String schema, List<String> columns, String table, String where, String orderBy);
 
+//    String sqlForSelect(List<String> columns, String table, String where, String groupBy, String
+//    having);
+
     String sqlForCreateTable(ORMapping mapping);
 
     String sqlForDropTable(ORMapping mapping);
 
     String sqlForCreateSchema(String schema);
 
-    List<String> sqlForCreateIndexes(ORMapping mapping);
+//    List<String> sqlForCreateIndexes(ORMapping mapping);
 
     SetNullParameterMethod getSetNullParameterMethod();
 }

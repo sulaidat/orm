@@ -11,8 +11,6 @@ public class GenericSelectQuery extends AbstractQuery implements IGenericSelectQ
 
     private String sql;
     private List<Object> params;
-    private Integer limit;
-    private Integer offset;
 
     public GenericSelectQuery(IQueryTarget target) {
         super(target);
@@ -22,18 +20,6 @@ public class GenericSelectQuery extends AbstractQuery implements IGenericSelectQ
     public IGenericSelectQuery sql(String sql, Object... params) {
         this.sql = sql;
         this.params = Arrays.asList(params);
-        return this;
-    }
-
-    @Override
-    public IGenericSelectQuery limit(Integer limit) {
-        this.limit = limit;
-        return this;
-    }
-
-    @Override
-    public IGenericSelectQuery offset(Integer offset) {
-        this.offset = offset;
         return this;
     }
 
@@ -53,12 +39,12 @@ public class GenericSelectQuery extends AbstractQuery implements IGenericSelectQ
     }
 
     @Override
-    public <T> IObjectResultSet<T> asObject(Class<T> clazz) {
+    public <T> IObjectResultSet<T> toObject(Class<T> clazz) {
         return new ObjectResultSet<>(getQueryTarget(), getSQL(), params, clazz);
     }
 
     protected String getSQL() {
-        return getQueryTarget().getConfig().getDialect().sqlForSelect(sql, limit, offset);
+        return getQueryTarget().getConfig().getDialect().sqlForSelect(sql, null, null);
     }
 
 }

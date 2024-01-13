@@ -5,7 +5,6 @@ import org.jminiorm.exception.DBException;
 import org.jminiorm.mapping.ColumnMapping;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ORMUpdateQuery<T> extends AbstractORMQuery<T> implements IORMUpdateQuery<T> {
 
@@ -36,7 +35,7 @@ public class ORMUpdateQuery<T> extends AbstractORMQuery<T> implements IORMUpdate
     public void execute() throws DBException {
         if (!objs.isEmpty()) {
             // The table to update :
-            String table = getMapping().getTable();
+            String table = getMapping().getTableName();
 
             // The maps column => value to update :
             List<Map<String, Object>> rows = new ArrayList<>();

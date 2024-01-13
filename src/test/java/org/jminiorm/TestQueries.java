@@ -83,11 +83,13 @@ public class TestQueries {
         Database db;
         IDatabaseConfig config;
 
+        // Create a DataSource for your database connection:
         PGSimpleDataSource ds = new PGSimpleDataSource();
         ds.setUrl("jdbc:postgresql://dpg-cm257smn7f5s73esa0s0-a.singapore-postgres.render.com/random_jsfh");
         ds.setUser("random_jsfh_user");
         ds.setPassword("1HYm8DGIlaZjfZuC56KC6miLZlArJdwd");
 
+        // Pass datasource, statement executor and dialect to the database config:
         config = new DatabaseConfig();
         config.dataSource(ds)
                 .statementExecutor(new DefaultStatementExecutor())

@@ -11,10 +11,10 @@ import java.util.List;
  */
 public class ORMapping {
 
-    private Class<?> javaClass;
+    private Class<?> clazz;
     private String schema;
-    private String table;
-    private List<Index> indexes;
+    private String tableName;
+//    private List<Index> indexes;
     private List<ColumnMapping> columnMappings;
     private CaseInsensitiveMap<ColumnMapping> columnMappingsIndexedByProperty;
     private CaseInsensitiveMap<ColumnMapping> columnMappingsIndexedByColumn;
@@ -24,12 +24,12 @@ public class ORMapping {
     public ORMapping() {
     }
 
-    public Class<?> getJavaClass() {
-        return javaClass;
+    public Class<?> getClazz() {
+        return clazz;
     }
 
-    public void setJavaClass(Class<?> javaClass) {
-        this.javaClass = javaClass;
+    public void setClazz(Class<?> clazz) {
+        this.clazz = clazz;
     }
 
 
@@ -41,21 +41,21 @@ public class ORMapping {
         this.schema = schema;
     }
 
-    public String getTable() {
-        return table;
+    public String getTableName() {
+        return tableName;
     }
 
-    public void setTable(String table) {
-        this.table = table;
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
-    public List<Index> getIndexes() {
-        return indexes;
-    }
-
-    public void setIndexes(List<Index> indexes) {
-        this.indexes = indexes;
-    }
+//    public List<Index> getIndexes() {
+//        return indexes;
+//    }
+//
+//    public void setIndexes(List<Index> indexes) {
+//        this.indexes = indexes;
+//    }
 
     public List<ColumnMapping> getColumnMappings() {
         return columnMappings;
@@ -120,7 +120,7 @@ public class ORMapping {
                 }
             }
             if (idColumnMappings.isEmpty())
-                throw new RuntimeException("No ID column defined in class " + getJavaClass().getName());
+                throw new RuntimeException("No ID column defined in class " + getClazz().getName());
         }
         return idColumnMappings;
     }

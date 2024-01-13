@@ -10,6 +10,11 @@ import org.jminiorm.resultset.IObjectResultSet;
  */
 public interface IORMSelectQuery<T> extends IORMQuery<T>, IObjectResultSet<T> {
 
+    /**
+     * Sets the target class
+     * @param clazz
+     * @return
+     */
     @Override
     IORMSelectQuery<T> forClass(Class<T> clazz);
 
@@ -23,36 +28,28 @@ public interface IORMSelectQuery<T> extends IORMQuery<T>, IObjectResultSet<T> {
     IORMSelectQuery<T> where(String where, Object... params);
 
     /**
+     * Sets the group by clause and returns this.
+     * @param groupBy
+     * @param params
+     * @return
+     */
+    IORMSelectQuery<T> groupBy(String groupBy, Object... params);
+
+    /**
+     * Sets the having clause and returns this.
+     * @param having
+     * @param params
+     * @return
+     */
+    IORMSelectQuery<T> having(String having, Object... params);
+
+    /**
      * Sets the id of the object to return.
      *
      * @param id
      * @return this
      */
     IORMSelectQuery<T> id(Object id);
-
-    /**
-     * Sets the limit and returns this.
-     *
-     * @param limit
-     * @return
-     */
-    IORMSelectQuery<T> limit(Integer limit);
-
-    /**
-     * Sets the offset and returns this.
-     *
-     * @param offset
-     * @return
-     */
-    IORMSelectQuery<T> offset(Integer offset);
-
-    /**
-     * Sets the order by clause and returns this. Optional.
-     *
-     * @param orderBy
-     * @return this
-     */
-    IORMSelectQuery<T> orderBy(String orderBy);
 
     IORMSelectQuery<T> groupBy(String groupBy);
 

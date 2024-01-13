@@ -1,17 +1,13 @@
 package org.jminiorm;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.jminiorm.dialect.GenericSQLDialect;
 import org.jminiorm.dialect.ISQLDialect;
 import org.jminiorm.executor.DefaultStatementExecutor;
 import org.jminiorm.executor.IStatementExecutor;
 import org.jminiorm.mapping.provider.IORMappingProvider;
-import org.jminiorm.mapping.provider.JPAORMappingProvider;
+import org.jminiorm.mapping.provider.JPAORMFactory;
 import org.jminiorm.mapping.type.DefaultJDBCTypeMapper;
 import org.jminiorm.mapping.type.IJDBCTypeMapper;
-import org.postgresql.ds.PGPoolingDataSource;
-import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
 
@@ -87,7 +83,7 @@ public class DatabaseConfig implements IDatabaseConfig {
             dialect = new GenericSQLDialect();
 
         if (mappingProvider == null)
-            mappingProvider = new JPAORMappingProvider();
+            mappingProvider = new JPAORMFactory();
 
         if (typeMapper == null)
             typeMapper = new DefaultJDBCTypeMapper();
