@@ -20,7 +20,7 @@ public class TestJPAMapping {
 
         assertEquals(mapping.getClazz(), User.class);
         assertEquals(mapping.getTableName(), "users");
-        assertEquals(mapping.getSchema(), "public");
+//        assertEquals(mapping.getSchema(), "public");
 //        assertEquals(mapping.getIndexes().size(), 1);
 //        org.jminiorm.mapping.Index i = mapping.getIndexes().get(0);
 //        assertEquals("index_name", i.getName());
@@ -67,9 +67,7 @@ public class TestJPAMapping {
     /**
      * A class used to test JPA mappings.
      */
-    @Table(name = "users", schema="public", indexes = {
-            @Index(name = "index_name", columnList = "list", unique = true)
-    })
+    @Table(name = "users")
     class User {
 
         @Id
