@@ -1,6 +1,6 @@
 package org.proorm.query;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 
 /**
  * Interface of all queries.

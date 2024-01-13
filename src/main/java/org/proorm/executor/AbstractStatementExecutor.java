@@ -1,9 +1,9 @@
 package org.proorm.executor;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.dialect.SetNullParameterMethod;
 import org.proorm.exception.DBException;
-import org.proorm.utils.CaseInsensitiveMap;
+import org.proorm.mapping.CaseInsensitiveMap;
 
 import java.math.BigDecimal;
 import java.sql.*;

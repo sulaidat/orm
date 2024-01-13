@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.exception.DBException;
 import org.proorm.query.AbstractQuery;
 

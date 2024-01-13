@@ -7,8 +7,9 @@ import org.proorm.query.orm.IORMInsertQuery;
 import java.util.Collection;
 
 public interface IInsertQuery {
+
     /**
-     * Begins a JPA insert query.
+     * Begins a insert query.
      *
      * @param clazz
      * @param <T>
@@ -18,7 +19,7 @@ public interface IInsertQuery {
     <T> IORMInsertQuery<T> insert(Class<T> clazz);
 
     /**
-     * Insert an instance of JPA annotated class into its table. Generated id is set if any.
+     * Insert an instance of annotated class into its table. Generated id is set if any.
      *
      * @param obj
      * @throws DBException
@@ -26,7 +27,7 @@ public interface IInsertQuery {
     <T> void insert(T obj) throws DBException;
 
     /**
-     * Insert instances of a JPA annotated class into their table. Generated ids are set if any.
+     * Insert instances of a annotated class into their table. Generated ids are set if any.
      *
      * @param objs
      * @throws DBException

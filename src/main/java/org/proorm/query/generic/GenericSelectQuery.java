@@ -1,6 +1,6 @@
 package org.proorm.query.generic;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.query.AbstractQuery;
 import org.proorm.result.map.IMapResult;
 import org.proorm.result.map.MapResult;

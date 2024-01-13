@@ -1,6 +1,6 @@
 package org.proorm.result.object;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.attributeconverter.AttributeConverterUtils;
 import org.proorm.mapping.ColumnMapping;
 import org.proorm.mapping.ORMapping;

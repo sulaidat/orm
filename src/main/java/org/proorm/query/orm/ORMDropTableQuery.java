@@ -1,6 +1,6 @@
 package org.proorm.query.orm;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.exception.DBException;
 
 public class ORMDropTableQuery<T> extends AbstractORMQuery<T> implements IORMDropTableQuery<T> {

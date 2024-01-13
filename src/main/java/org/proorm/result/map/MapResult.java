@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.result.AbstractResult;
 
 public class MapResult<V> extends AbstractResult<Map<String,V>> implements IMapResult<V> {

@@ -1,6 +1,6 @@
 package org.proorm.query.orm;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.exception.DBException;
 import org.proorm.exception.UnexpectedNumberOfItemsException;
 import org.proorm.mapping.ColumnMapping;

@@ -1,4 +1,4 @@
-package org.proorm;
+package org.proorm.queryTarget;
 
 import org.proorm.exception.DBException;
 import org.proorm.query.generic.*;
@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractQueryTarget implements IQueryTarget {
+public abstract class QueryTargetFactory implements IQueryTarget {
 
     @Override
     public <T> IORMSelectQuery<T> select(Class<T> clazz) {

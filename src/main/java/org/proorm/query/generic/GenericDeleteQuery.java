@@ -1,6 +1,6 @@
 package org.proorm.query.generic;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.exception.DBException;
 
 import java.util.ArrayList;

@@ -3,7 +3,7 @@ package org.proorm.executor;
 import java.util.List;
 import java.util.Map;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.exception.DBException;
 
 /**

@@ -1,6 +1,6 @@
 package org.proorm.result;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 import org.proorm.exception.DBException;
 import org.proorm.exception.UnexpectedNumberOfItemsException;
 
