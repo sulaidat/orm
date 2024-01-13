@@ -1,5 +1,59 @@
 @startuml
-class org.jminiorm.mapping.ColumnMapping {
+interface org.proorm.executor.IStatementExecutor {
+~ List<Long> executeUpdate(IQueryTarget,String,List<List<Object>>,String)
+~ List<Map<String,Object>> executeSelect(IQueryTarget,String,List<Object>,Map<String,Class<?>>)
+}
+interface org.proorm.IDatabaseConfig {
+~ DataSource getDataSource()
+~ IDatabaseConfig dataSource(DataSource)
+~ ISQLDialect getDialect()
+~ IDatabaseConfig dialect(ISQLDialect)
+~ IORMappingProvider getORMappingProvider()
+~ IDatabaseConfig ORMappingProvider(IORMappingProvider)
+~ IJDBCTypeMapper getJDBCTypeMapper()
+~ IDatabaseConfig JDBCTypeMapper(IJDBCTypeMapper)
+~ IStatementExecutor getStatementExecutor()
+~ IDatabaseConfig statementExecutor(IStatementExecutor)
+~ IDatabaseConfig build()
+}
+class org.proorm.attributeconverter.AttributeConverterUtils {
++ {static} Class<?> getConverterDatabaseType(AttributeConverter)
+}
+class org.proorm.Database {
+- IDatabaseConfig config
++ IDatabaseConfig getConfig()
++ Connection getConnection()
++ void releaseConnection(Connection)
+}
+interface org.proorm.crud.IInsertQuery {
+~ IORMInsertQuery<T> insert(Class<T>)
+~ void insert(T)
+~ void insert(Collection<T>)
+~ IGenericInsertQuery insert(String)
+}
+interface org.proorm.mapping.provider.IORMappingProvider {
+~ ORMapping getORMapping(Class<?>)
+}
+class org.proorm.result.object.ObjectResult {
+- Class<T> clazz
+# T castRow(Map<String,Object>)
+# Object canonicalValue(Class<?>)
+# ORMapping getMapping()
+# Map<String,Class<?>> typeMappings()
+}
+abstract class org.proorm.executor.AbstractStatementExecutor {
++ List<Map<String,Object>> executeSelect(IQueryTarget,String,List<Object>,Map<String,Class<?>>)
+# void setParameters(IQueryTarget,PreparedStatement,List<Object>)
+# Object getObject(IQueryTarget,ResultSet,ResultSetMetaData,int,Class<?>)
+# void setObject(IQueryTarget,PreparedStatement,int,Object)
+# int getGeneratedColumnIndex(IQueryTarget,ResultSet,String)
+}
+interface org.proorm.crud.ISelectQuery {
+~ IORMSelectQuery<T> select(Class<T>)
+~ T select(Class<T>,Object)
+~ IGenericSelectQuery select(String,Object)
+}
+class org.proorm.mapping.ColumnMapping {
 - PropertyDescriptor propertyDescriptor
 - String columnDefinition
 - boolean isId
@@ -20,7 +74,7 @@ class org.jminiorm.mapping.ColumnMapping {
 + void setInsertable(boolean)
 + Integer getLength()
 + void setLength(Integer)
-+ String getColumn()
++ String getName()
 + void setColumn(String)
 + boolean isNullable()
 + void setNullable(boolean)
@@ -36,96 +90,113 @@ class org.jminiorm.mapping.ColumnMapping {
 + void setGenerated(boolean)
 + AttributeConverter<?,?> getConverter()
 + void setConverter(AttributeConverter<?,?>)
-+ Object readProperty(Object)
++ Object getValue(Object)
 + void writeProperty(Object,Object)
 - {static} Field getField(Class,String)
 }
-abstract class org.jminiorm.attributeconverter.JsonAttributeConverter {
-- JavaType javaType
-- ObjectMapper mapper
-- ObjectReader reader
-- ObjectWriter writer
-+ String convertToDatabaseColumn(T)
-+ T convertToEntityAttribute(String)
-# ObjectMapper getMapper()
-# ObjectWriter getWriter()
-# ObjectReader getReader()
-# JavaType getJavaType()
-}
-class org.jminiorm.query.orm.ORMDropTableQuery {
-+ IORMDropTableQuery<T> forClass(Class<T>)
-+ void execute()
-}
-class org.jminiorm.query.generic.GenericUpdateQuery {
-- String schema
-- String table
-- List<String> idColumns
-- List<Map<String,Object>> values
-+ IGenericUpdateQuery schema(String)
-+ IGenericUpdateQuery table(String)
-+ IGenericUpdateQuery idColumn(String)
-+ IGenericUpdateQuery idColumns(String)
-+ IGenericUpdateQuery addOne(Map<String,Object>)
-+ IGenericUpdateQuery addMany(List<Map<String,Object>>)
-+ void execute()
-}
-abstract class org.jminiorm.executor.AbstractLoggingStatementExecutor {
-- IStatementExecutor wrapped
-+ List<Long> executeUpdate(IQueryTarget,String,List<List<Object>>,String)
-# void logUpdate(IQueryTarget,String,List<List<Object>>)
-+ List<Map<String,Object>> executeQuery(IQueryTarget,String,List<Object>,Map<String,Class<?>>)
-# void logQuery(IQueryTarget,String,List<Object>,Map<String,Class<?>>)
-# {abstract}void log(String)
-}
-class org.jminiorm.executor.SLF4JLoggingStatementExecutor {
-- {static} Logger logger
-# void log(String)
-}
-class org.jminiorm.mapping.type.DefaultJDBCTypeMapper {
-+ Class<?> getJavaType(int)
-}
-interface org.jminiorm.result.object.IObjectResult {
-}
-class org.jminiorm.result.object.ObjectResult {
-- Class<T> clazz
-# T castRow(Map<String,Object>)
-# Object canonicalValue(Class<?>)
-# ORMapping getMapping()
-# Map<String,Class<?>> typeMappings()
-}
-enum org.jminiorm.dialect.SetNullParameterMethod {
-+  SETNULL
-+  SETOBJECT
-}
-class org.jminiorm.query.generic.GenericDeleteQuery {
-- String schema
-- String table
-- List<String> idColumns
-- List<List<Object>> ids
-- String where
+abstract class org.proorm.result.AbstractResult {
+- IQueryTarget queryTarget
+- String sql
 - List<Object> params
-+ IGenericDeleteQuery schema(String)
-+ IGenericDeleteQuery table(String)
-+ IGenericDeleteQuery idColumn(String)
-+ IGenericDeleteQuery idColumns(String)
-+ IGenericDeleteQuery addOne(Object)
-+ IGenericDeleteQuery addMany(List<Object>)
-+ IGenericDeleteQuery where(String,Object)
++ T one()
++ T first()
++ List<T> list()
+# IQueryTarget getQueryTarget()
+# {abstract}T castRow(Map<String,Object>)
+# {abstract}Map<String,Class<?>> typeMappings()
+}
+class org.proorm.query.generic.GenericRawQuery {
+- String sql
+- List<Object> params
++ IGenericRawQuery sql(String,Object)
 + void execute()
 }
-class org.jminiorm.query.generic.GenericInsertQuery {
+class org.proorm.query.generic.GenericInsertQuery {
 - String schema
 - String table
-- String generatedColumn
+- String generatedId
 - List<Map<String,Object>> values
-+ IGenericInsertQuery schema(String)
 + IGenericInsertQuery table(String)
-+ IGenericInsertQuery generatedColumn(String)
++ IGenericInsertQuery generatedId(String)
 + IGenericInsertQuery addOne(Map<String,Object>)
 + IGenericInsertQuery addMany(List<Map<String,Object>>)
 + void execute()
 }
-abstract class org.jminiorm.AbstractQueryTarget {
+class org.proorm.result.map.MapResult {
+- Class<V> type
+# Map<String,V> castRow(Map<String,Object>)
+# Map<String,Class<?>> typeMappings()
+}
+interface org.proorm.crud.IUpdateQuery {
+~ IORMUpdateQuery<T> update(Class<T>)
+~ void update(T)
+~ void update(Collection<T>)
+~ IGenericUpdateQuery update(String)
+}
+interface org.proorm.query.orm.IORMQuery {
+~ IORMQuery<T> forClass(Class<T>)
+}
+interface org.proorm.query.orm.IORMDeleteQuery {
+~ IORMDeleteQuery<T> forClass(Class<T>)
+~ IORMDeleteQuery<T> id(Object)
+~ IORMDeleteQuery<T> addOne(T)
+~ IORMDeleteQuery<T> addMany(Collection<T>)
+~ IORMDeleteQuery<T> where(String,Object)
+~ void execute()
+}
+interface org.proorm.query.generic.IGenericUpdateQuery {
+~ IGenericUpdateQuery schema(String)
+~ IGenericUpdateQuery table(String)
+~ IGenericUpdateQuery idColumn(String)
+~ IGenericUpdateQuery idColumns(String)
+~ IGenericUpdateQuery addOne(Map<String,Object>)
+~ IGenericUpdateQuery addMany(List<Map<String,Object>>)
+~ void execute()
+}
+interface org.proorm.dialect.ISQLDialect {
+~ String sqlForDelete(String,List<String>)
+~ String sqlForDeleteWhere(String,String)
+~ String sqlForInsert(String,List<String>)
+~ String sqlForUpdate(String,List<String>,List<String>)
+~ String sqlForSelect(String,Integer,Integer)
+~ String sqlForSelectWhere(List<String>,String,String)
+~ String sqlForSelect(List<String>,String,String,String,String)
+~ String sqlForCreateTable(ORMapping)
+~ String sqlForDropTable(ORMapping)
+~ SetNullParameterMethod getSetNullParameterMethod()
+}
+class org.proorm.attributeconverter.EnumOrdinalAttributeConverter {
+- Map<Integer,T> lookup
++ Integer convertToDatabaseColumn(T)
++ T convertToEntityAttribute(Integer)
+}
+class org.proorm.query.orm.ORMDropTableQuery {
++ IORMDropTableQuery<T> forClass(Class<T>)
++ void execute()
+}
+interface org.proorm.query.generic.IGenericInsertQuery {
+~ IGenericInsertQuery table(String)
+~ IGenericInsertQuery generatedId(String)
+~ IGenericInsertQuery addOne(Map<String,Object>)
+~ IGenericInsertQuery addMany(List<Map<String,Object>>)
+~ void execute()
+}
+class org.proorm.query.orm.ORMCreateTableQuery {
++ IORMCreateTableQuery<T> forClass(Class<T>)
++ void execute()
+}
+interface org.proorm.query.generic.IGenericSelectQuery {
+~ IGenericSelectQuery sql(String,Object)
+~ IMapResult<Object> toMap()
+~ IObjectResult<T> toObject(Class<T>)
+}
+interface org.proorm.result.object.IObjectResult {
+}
+interface org.proorm.query.IQuery {
+~ void setQueryTarget(IQueryTarget)
+~ IQueryTarget getQueryTarget()
+}
+abstract class org.proorm.QueryTargetFactory {
 + IORMSelectQuery<T> select(Class<T>)
 + T select(Class<T>,Object)
 + IGenericSelectQuery select(String,Object)
@@ -148,77 +219,35 @@ abstract class org.jminiorm.AbstractQueryTarget {
 + List<Long> executeUpdate(String,List<List<Object>>,String)
 + List<Map<String,Object>> executeQuery(String,List<Object>,Map<String,Class<?>>)
 }
-interface org.jminiorm.query.generic.IGenericQuery {
+class org.proorm.attributeconverter.EnumNameAttributeConverter {
+- Class<T> enumClass
++ String convertToDatabaseColumn(T)
++ T convertToEntityAttribute(String)
 }
-class org.jminiorm.mapping.JPAORMapping {
-# {static} Field getField(Class<?>,String)
+class org.proorm.query.orm.ORMUpdateQuery {
+- List<T> objs
++ IORMUpdateQuery<T> forClass(Class<T>)
++ ORMUpdateQuery<T> addOne(T)
++ ORMUpdateQuery<T> addMany(Collection<T>)
++ void execute()
 }
-class org.jminiorm.query.generic.GenericSelectQuery {
-- String sql
-- List<Object> params
-+ IGenericSelectQuery sql(String,Object)
-+ IMapResult<Object> toMap()
-+ IObjectResult<T> toObject(Class<T>)
-# String getSQL()
+interface org.proorm.query.generic.IGenericQuery {
 }
-class org.jminiorm.dialect.SybaseASASQLDialect {
-+ SetNullParameterMethod getSetNullParameterMethod()
+class org.proorm.dialect.PostgreSQLDialect {
 # String sqlForAutoIncrement()
-+ String sqlForCreateSchema(String)
 # String sqlForColumnType(Class<?>,Integer,Integer,Integer,boolean)
-+ String sqlForSelect(String,Integer,Integer)
 }
-abstract class org.jminiorm.mapping.provider.AbstractORMFactory {
-- Map<Class<?>,ORMapping> mappings
-+ ORMapping getORMapping(Class<?>)
-# {abstract}ORMapping createORMapping(Class<?>)
-}
-abstract class org.jminiorm.query.generic.AbstractGenericQuery {
-}
-abstract class org.jminiorm.query.orm.AbstractORMQuery {
-- Class<T> clazz
-+ IORMQuery<T> forClass(Class<T>)
-# Class<T> getTargetClass()
-# ORMapping getMapping()
-# void verifySchemaExistence()
-}
-class org.jminiorm.executor.DefaultStatementExecutor {
-+ List<Long> executeUpdate(IQueryTarget,String,List<List<Object>>,String)
-}
-interface org.jminiorm.result.IResult {
-~ T one()
-~ T first()
-~ List<T> list()
-}
-class org.jminiorm.exception.DBException {
-}
-interface org.jminiorm.crud.IDeleteQuery {
-~ IORMDeleteQuery<T> delete(Class<T>)
-~ void delete(Class<T>,Object)
-~ void delete(T)
-~ void delete(Collection<T>)
-~ IGenericDeleteQuery delete(String)
-}
-class org.jminiorm.utils.CaseInsensitiveMap {
-+ void putAll(Map<? extends String,? extends T>)
-+ T put(String,T)
-+ T get(Object)
-}
-class org.jminiorm.mapping.provider.JPAORMFactory {
+class org.proorm.mapping.provider.JPAORMFactory {
 # ORMapping createORMapping(Class<?>)
 }
-abstract class org.jminiorm.result.AbstractResult {
-- IQueryTarget queryTarget
-- String sql
-- List<Object> params
-+ T one()
-+ T first()
-+ List<T> list()
-# IQueryTarget getQueryTarget()
-# {abstract}T castRow(Map<String,Object>)
-# {abstract}Map<String,Class<?>> typeMappings()
+interface org.proorm.IDatabase {
 }
-class org.jminiorm.query.orm.ORMDeleteQuery {
+interface org.proorm.IQueryTarget {
+~ Connection getConnection()
+~ void releaseConnection(Connection)
+~ IDatabaseConfig getConfig()
+}
+class org.proorm.query.orm.ORMDeleteQuery {
 - List<List<Object>> ids
 - String where
 - List<Object> params
@@ -229,208 +258,51 @@ class org.jminiorm.query.orm.ORMDeleteQuery {
 + IORMDeleteQuery<T> where(String,Object)
 + void execute()
 }
-interface org.jminiorm.query.orm.IORMDropTableQuery {
-~ IORMDropTableQuery<T> forClass(Class<T>)
-~ void execute()
+abstract class org.proorm.query.generic.AbstractGenericQuery {
 }
-class org.jminiorm.executor.BatchStatementExecutor {
-- int batchSize
-+ List<Long> executeUpdate(IQueryTarget,String,List<List<Object>>,String)
-# List<Long> getGeneratedKeys(IQueryTarget,PreparedStatement,String)
-}
-class org.jminiorm.attributeconverter.EnumNameAttributeConverter {
-- Class<T> enumClass
-+ String convertToDatabaseColumn(T)
-+ T convertToEntityAttribute(String)
-}
-abstract class org.jminiorm.executor.AbstractStatementExecutor {
-+ List<Map<String,Object>> executeQuery(IQueryTarget,String,List<Object>,Map<String,Class<?>>)
-# void setParameters(IQueryTarget,PreparedStatement,List<Object>)
-# Object getObject(IQueryTarget,ResultSet,ResultSetMetaData,int,Class<?>)
-# void setObject(IQueryTarget,PreparedStatement,int,Object)
-# int getGeneratedColumnIndex(IQueryTarget,ResultSet,String)
-}
-interface org.jminiorm.query.generic.IGenericSelectQuery {
-~ IGenericSelectQuery sql(String,Object)
-~ IMapResult<Object> toMap()
-~ IObjectResult<T> toObject(Class<T>)
-}
-interface org.jminiorm.mapping.type.IJDBCTypeMapper {
-~ Class<?> getJavaType(int)
-}
-interface org.jminiorm.query.generic.IGenericUpdateQuery {
-~ IGenericUpdateQuery schema(String)
-~ IGenericUpdateQuery table(String)
-~ IGenericUpdateQuery idColumn(String)
-~ IGenericUpdateQuery idColumns(String)
-~ IGenericUpdateQuery addOne(Map<String,Object>)
-~ IGenericUpdateQuery addMany(List<Map<String,Object>>)
-~ void execute()
-}
-class org.jminiorm.query.orm.ORMCreateTableQuery {
-+ IORMCreateTableQuery<T> forClass(Class<T>)
-+ void execute()
-}
-interface org.jminiorm.query.orm.IORMDeleteQuery {
-~ IORMDeleteQuery<T> forClass(Class<T>)
-~ IORMDeleteQuery<T> id(Object)
-~ IORMDeleteQuery<T> addOne(T)
-~ IORMDeleteQuery<T> addMany(Collection<T>)
-~ IORMDeleteQuery<T> where(String,Object)
-~ void execute()
-}
-interface org.jminiorm.query.orm.IORMUpdateQuery {
-~ IORMUpdateQuery<T> forClass(Class<T>)
-~ IORMUpdateQuery<T> addOne(T)
-~ IORMUpdateQuery<T> addMany(Collection<T>)
-~ void execute()
-}
-interface org.jminiorm.crud.ITableQuery {
-~ void createTable(Class<T>)
-~ void dropTable(Class<T>)
-~ void sql(String,Object)
-~ List<Long> executeUpdate(String,List<List<Object>>,String)
-~ List<Map<String,Object>> executeQuery(String,List<Object>,Map<String,Class<?>>)
-}
-class org.jminiorm.query.AbstractQuery {
+class org.proorm.query.AbstractQuery {
 - IQueryTarget target
 + void setQueryTarget(IQueryTarget)
 + IQueryTarget getQueryTarget()
 }
-class org.jminiorm.query.orm.ORMSelectQuery {
+class org.proorm.query.generic.GenericDeleteQuery {
+- String schema
+- String table
+- List<String> idColumns
+- List<List<Object>> ids
 - String where
 - List<Object> params
-- String groupBy
-- String having
-+ IORMSelectQuery<T> forClass(Class<T>)
-+ IORMSelectQuery<T> where(String,Object)
-+ IORMSelectQuery<T> groupBy(String,Object)
-+ IORMSelectQuery<T> having(String,Object)
-+ IORMSelectQuery<T> id(Object)
-+ IORMSelectQuery<T> groupBy(String)
-+ IORMSelectQuery<T> having(String)
-+ T one()
-+ T first()
-+ List<T> list()
-# IObjectResult<T> getResult()
-# String buildSQL()
++ IGenericDeleteQuery schema(String)
++ IGenericDeleteQuery table(String)
++ IGenericDeleteQuery idColumn(String)
++ IGenericDeleteQuery idColumns(String)
++ IGenericDeleteQuery addOne(Object)
++ IGenericDeleteQuery addMany(List<Object>)
++ IGenericDeleteQuery where(String,Object)
++ void execute()
 }
-class org.jminiorm.query.orm.ORMInsertQuery {
-- List<T> objs
+class org.proorm.exception.DBException {
+}
+class org.proorm.exception.UnexpectedNumberOfItemsException {
+- int actual
++ int getActual()
+}
+class org.proorm.query.orm.ORMInsertQuery {
+- List<T> columnTypes
 + IORMInsertQuery<T> forClass(Class<T>)
 + ORMInsertQuery<T> addOne(T)
 + ORMInsertQuery<T> addMany(Collection<T>)
 + void execute()
 }
-interface org.jminiorm.query.generic.IGenericInsertQuery {
-~ IGenericInsertQuery schema(String)
-~ IGenericInsertQuery table(String)
-~ IGenericInsertQuery generatedColumn(String)
-~ IGenericInsertQuery addOne(Map<String,Object>)
-~ IGenericInsertQuery addMany(List<Map<String,Object>>)
+interface org.proorm.query.generic.IGenericRawQuery {
+~ IGenericRawQuery sql(String,Object)
 ~ void execute()
 }
-class org.jminiorm.utils.RSUtils {
-+ {static} Map<K,List<T>> group(List<T>,String)
-+ {static} Map<K,T> index(List<T>,String)
-+ {static} Set<K> distinct(List<T>,String)
-- {static} IPropertyReader<T> getReader(Class<T>,String)
+enum org.proorm.dialect.SetNullParameterMethod {
++  SETNULL
++  SETOBJECT
 }
-interface org.jminiorm.utils.RSUtils$IPropertyReader {
-~ Object readProperty(T)
-}
-class org.jminiorm.utils.RSUtils$MapPropertyReader {
-- String property
-+ Object readProperty(Map)
-}
-class org.jminiorm.utils.RSUtils$ObjectPropertyReader {
-- Method reader
-+ Object readProperty(T)
-}
-interface org.jminiorm.query.orm.IORMCreateTableQuery {
-~ IORMCreateTableQuery<T> forClass(Class<T>)
-~ void execute()
-}
-interface org.jminiorm.query.orm.IORMSelectQuery {
-~ IORMSelectQuery<T> forClass(Class<T>)
-~ IORMSelectQuery<T> where(String,Object)
-~ IORMSelectQuery<T> groupBy(String,Object)
-~ IORMSelectQuery<T> having(String,Object)
-~ IORMSelectQuery<T> id(Object)
-~ IORMSelectQuery<T> groupBy(String)
-~ IORMSelectQuery<T> having(String)
-}
-interface org.jminiorm.executor.IStatementExecutor {
-~ List<Long> executeUpdate(IQueryTarget,String,List<List<Object>>,String)
-~ List<Map<String,Object>> executeQuery(IQueryTarget,String,List<Object>,Map<String,Class<?>>)
-}
-interface org.jminiorm.IDatabaseConfig {
-~ DataSource getDataSource()
-~ IDatabaseConfig dataSource(DataSource)
-~ ISQLDialect getDialect()
-~ IDatabaseConfig dialect(ISQLDialect)
-~ IORMappingProvider getORMappingProvider()
-~ IDatabaseConfig ORMappingProvider(IORMappingProvider)
-~ IJDBCTypeMapper getJDBCTypeMapper()
-~ IDatabaseConfig JDBCTypeMapper(IJDBCTypeMapper)
-~ IStatementExecutor getStatementExecutor()
-~ IDatabaseConfig statementExecutor(IStatementExecutor)
-~ IDatabaseConfig build()
-}
-interface org.jminiorm.dialect.ISQLDialect {
-~ String sqlForDelete(String,String,List<String>)
-~ String sqlForDeleteWhere(String,String,String)
-~ String sqlForInsert(String,String,List<String>)
-~ String sqlForUpdate(String,String,List<String>,List<String>)
-~ String sqlForSelect(String,Integer,Integer)
-~ String sqlForSelectWhere(String,List<String>,String,String)
-~ String sqlForSelect(String,List<String>,String,String,String,String)
-~ String sqlForCreateTable(ORMapping)
-~ String sqlForDropTable(ORMapping)
-~ String sqlForCreateSchema(String)
-~ SetNullParameterMethod getSetNullParameterMethod()
-}
-class org.jminiorm.result.map.MapResult {
-- Class<V> type
-# Map<String,V> castRow(Map<String,Object>)
-# Map<String,Class<?>> typeMappings()
-}
-class org.jminiorm.Database {
-- IDatabaseConfig config
-+ IDatabaseConfig getConfig()
-+ Connection getConnection()
-+ void releaseConnection(Connection)
-}
-class org.jminiorm.query.generic.GenericRawQuery {
-- String sql
-- List<Object> params
-+ IGenericRawQuery sql(String,Object)
-+ void execute()
-}
-class org.jminiorm.attributeconverter.AttributeConverterUtils {
-+ {static} Class<?> getConverterDatabaseType(AttributeConverter)
-}
-abstract class org.jminiorm.attributeconverter.LegacyJsonAttributeConverter {
-}
-interface org.jminiorm.IQueryTarget {
-~ Connection getConnection()
-~ void releaseConnection(Connection)
-~ IDatabaseConfig getConfig()
-}
-interface org.jminiorm.query.IQuery {
-~ void setQueryTarget(IQueryTarget)
-~ IQueryTarget getQueryTarget()
-}
-interface org.jminiorm.mapping.provider.IORMappingProvider {
-~ ORMapping getORMapping(Class<?>)
-}
-interface org.jminiorm.IDatabase {
-}
-class org.jminiorm.dialect.PostgreSQLDialect {
-# String sqlForAutoIncrement()
-# String sqlForColumnType(Class<?>,Integer,Integer,Integer,boolean)
-}
-class org.jminiorm.DatabaseConfig {
+class org.proorm.DatabaseConfig {
 - DataSource dataSource
 - ISQLDialect dialect
 - IORMappingProvider mappingProvider
@@ -448,79 +320,7 @@ class org.jminiorm.DatabaseConfig {
 + IDatabaseConfig statementExecutor(IStatementExecutor)
 + IDatabaseConfig build()
 }
-interface org.jminiorm.crud.IUpdateQuery {
-~ IORMUpdateQuery<T> update(Class<T>)
-~ void update(T)
-~ void update(Collection<T>)
-~ IGenericUpdateQuery update(String)
-}
-interface org.jminiorm.query.orm.IORMInsertQuery {
-~ IORMInsertQuery<T> forClass(Class<T>)
-~ IORMInsertQuery<T> addOne(T)
-~ IORMInsertQuery<T> addMany(Collection<T>)
-~ void execute()
-}
-interface org.jminiorm.query.generic.IGenericRawQuery {
-~ IGenericRawQuery sql(String,Object)
-~ void execute()
-}
-class org.jminiorm.query.orm.ORMUpdateQuery {
-- List<T> objs
-+ IORMUpdateQuery<T> forClass(Class<T>)
-+ ORMUpdateQuery<T> addOne(T)
-+ ORMUpdateQuery<T> addMany(Collection<T>)
-+ void execute()
-}
-class org.jminiorm.attributeconverter.EnumOrdinalAttributeConverter {
-- Map<Integer,T> lookup
-+ Integer convertToDatabaseColumn(T)
-+ T convertToEntityAttribute(Integer)
-}
-class org.jminiorm.dialect.GenericSQLDialect {
-+ String sqlForDelete(String,String,List<String>)
-# String sqlForDeleteIdEscaped(String,String,List<String>)
-+ String sqlForDeleteWhere(String,String,String)
-# String sqlForDeleteWhereIdEscaped(String,String,String)
-+ String sqlForInsert(String,String,List<String>)
-# String sqlForInsertIdEscaped(String,String,List<String>)
-+ String sqlForUpdate(String,String,List<String>,List<String>)
-# String sqlForUpdateIdEscaped(String,String,List<String>,List<String>)
-+ String sqlForSelect(String,Integer,Integer)
-+ String sqlForSelectWhere(String,List<String>,String,String)
-+ String sqlForSelect(String,List<String>,String,String,String,String)
-# String sqlForSelectIdEscaped(String,List<String>,String,String)
-# String sqlForSelectIdEscaped(String,List<String>,String,String,String,String)
-+ String sqlForCreateSchema(String)
-+ String sqlForDropTable(ORMapping)
-+ String sqlForCreateTable(ORMapping)
-# String sqlForColumnDefinition(ColumnMapping)
-# String sqlForColumnType(ColumnMapping)
-# String sqlForColumnType(Class<?>,Integer,Integer,Integer,boolean)
-# String sqlForAutoIncrement()
-# String sqlForPrimaryKey(ORMapping,List<ColumnMapping>)
-# List<String> questionMarks(int)
-# List<String> identifiers(List<String>)
-# String identifier(String,boolean)
-# String identifier(String)
-# String identifier(String,String)
-# String quoteIdentifier(String)
-# String schemaPrefix(String)
-+ SetNullParameterMethod getSetNullParameterMethod()
-}
-interface org.jminiorm.query.orm.IORMQuery {
-~ IORMQuery<T> forClass(Class<T>)
-}
-interface org.jminiorm.crud.IInsertQuery {
-~ IORMInsertQuery<T> insert(Class<T>)
-~ void insert(T)
-~ void insert(Collection<T>)
-~ IGenericInsertQuery insert(String)
-}
-class org.jminiorm.exception.UnexpectedNumberOfItemsException {
-- int actual
-+ int getActual()
-}
-class org.jminiorm.mapping.ORMapping {
+class org.proorm.mapping.ORMapping {
 - Class<?> clazz
 - String schema
 - String tableName
@@ -545,9 +345,169 @@ class org.jminiorm.mapping.ORMapping {
 + ColumnMapping getIdColumnMapping()
 + Boolean hasId()
 }
-interface org.jminiorm.result.map.IMapResult {
+class org.proorm.mapping.type.DefaultJDBCTypeMapper {
++ Class<?> getJavaType(int)
 }
-interface org.jminiorm.query.generic.IGenericDeleteQuery {
+class org.proorm.query.orm.ORMSelectQuery {
+- String where
+- List<Object> params
+- String groupBy
+- String having
++ IORMSelectQuery<T> forClass(Class<T>)
++ IORMSelectQuery<T> where(String,Object)
++ IORMSelectQuery<T> groupBy(String,Object)
++ IORMSelectQuery<T> having(String,Object)
++ IORMSelectQuery<T> id(Object)
++ IORMSelectQuery<T> groupBy(String)
++ IORMSelectQuery<T> having(String)
++ T one()
++ T first()
++ List<T> list()
+# IObjectResult<T> getResult()
+# String buildSQL()
+}
+interface org.proorm.crud.IDeleteQuery {
+~ IORMDeleteQuery<T> delete(Class<T>)
+~ void delete(Class<T>,Object)
+~ void delete(T)
+~ void delete(Collection<T>)
+~ IGenericDeleteQuery delete(String)
+}
+interface org.proorm.query.orm.IORMCreateTableQuery {
+~ IORMCreateTableQuery<T> forClass(Class<T>)
+~ void execute()
+}
+class org.proorm.executor.DefaultStatementExecutor {
++ List<Long> executeUpdate(IQueryTarget,String,List<List<Object>>,String)
+}
+interface org.proorm.query.orm.IORMUpdateQuery {
+~ IORMUpdateQuery<T> forClass(Class<T>)
+~ IORMUpdateQuery<T> addOne(T)
+~ IORMUpdateQuery<T> addMany(Collection<T>)
+~ void execute()
+}
+class org.proorm.query.generic.GenericSelectQuery {
+- String sql
+- List<Object> params
++ IGenericSelectQuery sql(String,Object)
++ IMapResult<Object> toMap()
++ IObjectResult<T> toObject(Class<T>)
+# String getSQL()
+}
+abstract class org.proorm.mapping.provider.AbstractORMFactory {
+- Map<Class<?>,ORMapping> mappings
++ ORMapping getORMapping(Class<?>)
+# {abstract}ORMapping createORMapping(Class<?>)
+}
+interface org.proorm.result.map.IMapResult {
+}
+interface org.proorm.crud.ITableQuery {
+~ void createTable(Class<T>)
+~ void dropTable(Class<T>)
+~ void sql(String,Object)
+~ List<Long> executeUpdate(String,List<List<Object>>,String)
+~ List<Map<String,Object>> executeQuery(String,List<Object>,Map<String,Class<?>>)
+}
+class org.proorm.query.generic.GenericUpdateQuery {
+- String schema
+- String table
+- List<String> idColumns
+- List<Map<String,Object>> values
++ IGenericUpdateQuery schema(String)
++ IGenericUpdateQuery table(String)
++ IGenericUpdateQuery idColumn(String)
++ IGenericUpdateQuery idColumns(String)
++ IGenericUpdateQuery addOne(Map<String,Object>)
++ IGenericUpdateQuery addMany(List<Map<String,Object>>)
++ void execute()
+}
+interface org.proorm.query.orm.IORMSelectQuery {
+~ IORMSelectQuery<T> forClass(Class<T>)
+~ IORMSelectQuery<T> where(String,Object)
+~ IORMSelectQuery<T> groupBy(String,Object)
+~ IORMSelectQuery<T> having(String,Object)
+~ IORMSelectQuery<T> id(Object)
+~ IORMSelectQuery<T> groupBy(String)
+~ IORMSelectQuery<T> having(String)
+}
+interface org.proorm.query.orm.IORMDropTableQuery {
+~ IORMDropTableQuery<T> forClass(Class<T>)
+~ void execute()
+}
+class org.proorm.dialect.GenericSQLDialect {
++ String sqlForDelete(String,List<String>)
+# String sqlForDeleteIdEscaped(String,List<String>)
++ String sqlForDeleteWhere(String,String)
+# String sqlForDeleteWhereIdEscaped(String,String)
++ String sqlForInsert(String,List<String>)
+# String sqlForInsertIdEscaped(String,List<String>)
++ String sqlForUpdate(String,List<String>,List<String>)
+# String sqlForUpdateIdEscaped(String,List<String>,List<String>)
++ String sqlForSelect(String,Integer,Integer)
++ String sqlForSelectWhere(List<String>,String,String)
++ String sqlForSelect(List<String>,String,String,String,String)
+# String sqlForSelectIdEscaped(List<String>,String,String)
+# String sqlForSelectIdEscaped(List<String>,String,String,String,String)
++ String sqlForDropTable(ORMapping)
++ String sqlForCreateTable(ORMapping)
+# String sqlForColumnDefinition(ColumnMapping)
+# String sqlForColumnType(ColumnMapping)
+# String sqlForColumnType(Class<?>,Integer,Integer,Integer,boolean)
+# String sqlForAutoIncrement()
+# String sqlForPrimaryKey(ORMapping,List<ColumnMapping>)
+# List<String> questionMarks(int)
+# List<String> identifiers(List<String>)
+# String identifier(String,String)
+# String schemaPrefix(String)
+# String identifier(String,boolean)
+# String identifier(String)
+# String quoteIdentifier(String)
++ SetNullParameterMethod getSetNullParameterMethod()
+}
+interface org.proorm.result.IResult {
+~ T one()
+~ T first()
+~ List<T> list()
+}
+class org.proorm.mapping.JPAORMapping {
+# {static} Field getField(Class<?>,String)
+}
+abstract class org.proorm.query.orm.AbstractORMQuery {
+- Class<T> clazz
++ IORMQuery<T> forClass(Class<T>)
+# Class<T> getTargetClass()
+# ORMapping getMapping()
+}
+class org.proorm.utils.RSUtils {
++ {static} Map<K,List<T>> group(List<T>,String)
++ {static} Map<K,T> index(List<T>,String)
++ {static} Set<K> distinct(List<T>,String)
+- {static} IPropertyReader<T> getReader(Class<T>,String)
+}
+interface org.proorm.utils.RSUtils$IPropertyReader {
+~ Object readProperty(T)
+}
+class org.proorm.utils.RSUtils$MapPropertyReader {
+- String property
++ Object readProperty(Map)
+}
+class org.proorm.utils.RSUtils$ObjectPropertyReader {
+- Method reader
++ Object readProperty(T)
+}
+abstract class org.proorm.attributeconverter.JsonAttributeConverter {
+- JavaType javaType
+- ObjectMapper mapper
+- ObjectReader reader
+- ObjectWriter writer
++ String convertToDatabaseColumn(T)
++ T convertToEntityAttribute(String)
+# ObjectMapper getMapper()
+# ObjectWriter getWriter()
+# ObjectReader getReader()
+# JavaType getJavaType()
+}
+interface org.proorm.query.generic.IGenericDeleteQuery {
 ~ IGenericDeleteQuery schema(String)
 ~ IGenericDeleteQuery table(String)
 ~ IGenericDeleteQuery idColumn(String)
@@ -557,93 +517,97 @@ interface org.jminiorm.query.generic.IGenericDeleteQuery {
 ~ IGenericDeleteQuery where(String,Object)
 ~ void execute()
 }
-interface org.jminiorm.crud.ISelectQuery {
-~ IORMSelectQuery<T> select(Class<T>)
-~ T select(Class<T>,Object)
-~ IGenericSelectQuery select(String,Object)
+interface org.proorm.query.orm.IORMInsertQuery {
+~ IORMInsertQuery<T> forClass(Class<T>)
+~ IORMInsertQuery<T> addOne(T)
+~ IORMInsertQuery<T> addMany(Collection<T>)
+~ void execute()
+}
+class org.proorm.utils.CaseInsensitiveMap {
++ void putAll(Map<? extends String,? extends T>)
++ T put(String,T)
++ T get(Object)
+}
+interface org.proorm.mapping.type.IJDBCTypeMapper {
+~ Class<?> getJavaType(int)
 }
 
 
-javax.persistence.AttributeConverter <|.. org.jminiorm.attributeconverter.JsonAttributeConverter
-org.jminiorm.query.orm.IORMDropTableQuery <|.. org.jminiorm.query.orm.ORMDropTableQuery
-org.jminiorm.query.orm.AbstractORMQuery <|-- org.jminiorm.query.orm.ORMDropTableQuery
-org.jminiorm.query.generic.IGenericUpdateQuery <|.. org.jminiorm.query.generic.GenericUpdateQuery
-org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.generic.GenericUpdateQuery
-org.jminiorm.executor.IStatementExecutor <|.. org.jminiorm.executor.AbstractLoggingStatementExecutor
-org.jminiorm.executor.AbstractLoggingStatementExecutor <|-- org.jminiorm.executor.SLF4JLoggingStatementExecutor
-org.jminiorm.mapping.type.IJDBCTypeMapper <|.. org.jminiorm.mapping.type.DefaultJDBCTypeMapper
-org.jminiorm.result.IResult <|-- org.jminiorm.result.object.IObjectResult
-org.jminiorm.result.object.IObjectResult <|.. org.jminiorm.result.object.ObjectResult
-org.jminiorm.result.AbstractResult <|-- org.jminiorm.result.object.ObjectResult
-org.jminiorm.query.generic.IGenericDeleteQuery <|.. org.jminiorm.query.generic.GenericDeleteQuery
-org.jminiorm.query.generic.AbstractGenericQuery <|-- org.jminiorm.query.generic.GenericDeleteQuery
-org.jminiorm.query.generic.IGenericInsertQuery <|.. org.jminiorm.query.generic.GenericInsertQuery
-org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.generic.GenericInsertQuery
-org.jminiorm.IQueryTarget <|.. org.jminiorm.AbstractQueryTarget
-org.jminiorm.query.IQuery <|-- org.jminiorm.query.generic.IGenericQuery
-org.jminiorm.mapping.ORMapping <|-- org.jminiorm.mapping.JPAORMapping
-org.jminiorm.query.generic.IGenericSelectQuery <|.. org.jminiorm.query.generic.GenericSelectQuery
-org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.generic.GenericSelectQuery
-org.jminiorm.dialect.GenericSQLDialect <|-- org.jminiorm.dialect.SybaseASASQLDialect
-org.jminiorm.mapping.provider.IORMappingProvider <|.. org.jminiorm.mapping.provider.AbstractORMFactory
-org.jminiorm.query.generic.IGenericQuery <|.. org.jminiorm.query.generic.AbstractGenericQuery
-org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.generic.AbstractGenericQuery
-org.jminiorm.query.orm.IORMQuery <|.. org.jminiorm.query.orm.AbstractORMQuery
-org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.orm.AbstractORMQuery
-org.jminiorm.executor.AbstractStatementExecutor <|-- org.jminiorm.executor.DefaultStatementExecutor
-org.jminiorm.exception.RuntimeException <|-- org.jminiorm.exception.DBException
-java.util.LinkedHashMap <|-- org.jminiorm.utils.CaseInsensitiveMap
-org.jminiorm.mapping.provider.AbstractORMFactory <|-- org.jminiorm.mapping.provider.JPAORMFactory
-org.jminiorm.result.IResult <|.. org.jminiorm.result.AbstractResult
-org.jminiorm.query.orm.IORMDeleteQuery <|.. org.jminiorm.query.orm.ORMDeleteQuery
-org.jminiorm.query.orm.AbstractORMQuery <|-- org.jminiorm.query.orm.ORMDeleteQuery
-org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMDropTableQuery
-org.jminiorm.executor.AbstractStatementExecutor <|-- org.jminiorm.executor.BatchStatementExecutor
-javax.persistence.AttributeConverter <|.. org.jminiorm.attributeconverter.EnumNameAttributeConverter
-org.jminiorm.executor.IStatementExecutor <|.. org.jminiorm.executor.AbstractStatementExecutor
-org.jminiorm.query.generic.IGenericQuery <|-- org.jminiorm.query.generic.IGenericSelectQuery
-org.jminiorm.query.generic.IGenericQuery <|-- org.jminiorm.query.generic.IGenericUpdateQuery
-org.jminiorm.query.orm.IORMCreateTableQuery <|.. org.jminiorm.query.orm.ORMCreateTableQuery
-org.jminiorm.query.orm.AbstractORMQuery <|-- org.jminiorm.query.orm.ORMCreateTableQuery
-org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMDeleteQuery
-org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMUpdateQuery
-org.jminiorm.query.IQuery <|.. org.jminiorm.query.AbstractQuery
-org.jminiorm.query.orm.IORMSelectQuery <|.. org.jminiorm.query.orm.ORMSelectQuery
-org.jminiorm.query.orm.AbstractORMQuery <|-- org.jminiorm.query.orm.ORMSelectQuery
-org.jminiorm.query.orm.IORMInsertQuery <|.. org.jminiorm.query.orm.ORMInsertQuery
-org.jminiorm.query.orm.AbstractORMQuery <|-- org.jminiorm.query.orm.ORMInsertQuery
-org.jminiorm.query.generic.IGenericQuery <|-- org.jminiorm.query.generic.IGenericInsertQuery
-org.jminiorm.utils.RSUtils +.. org.jminiorm.utils.RSUtils$IPropertyReader
-org.jminiorm.utils.RSUtils +.. org.jminiorm.utils.RSUtils$MapPropertyReader
-org.jminiorm.utils.IPropertyReader <|.. org.jminiorm.utils.RSUtils$MapPropertyReader
-org.jminiorm.utils.RSUtils +.. org.jminiorm.utils.RSUtils$ObjectPropertyReader
-org.jminiorm.utils.IPropertyReader <|.. org.jminiorm.utils.RSUtils$ObjectPropertyReader
-org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMCreateTableQuery
-org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMSelectQuery
-org.jminiorm.result.object.IObjectResult <|-- org.jminiorm.query.orm.IORMSelectQuery
-org.jminiorm.result.map.IMapResult <|.. org.jminiorm.result.map.MapResult
-org.jminiorm.result.AbstractResult <|-- org.jminiorm.result.map.MapResult
-org.jminiorm.IDatabase <|.. org.jminiorm.Database
-org.jminiorm.AbstractQueryTarget <|-- org.jminiorm.Database
-org.jminiorm.query.generic.IGenericRawQuery <|.. org.jminiorm.query.generic.GenericRawQuery
-org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.generic.GenericRawQuery
-javax.persistence.AttributeConverter <|.. org.jminiorm.attributeconverter.LegacyJsonAttributeConverter
-org.jminiorm.ISelectQuery <|-- org.jminiorm.IQueryTarget
-org.jminiorm.IInsertQuery <|-- org.jminiorm.IQueryTarget
-org.jminiorm.IUpdateQuery <|-- org.jminiorm.IQueryTarget
-org.jminiorm.ITableQuery <|-- org.jminiorm.IQueryTarget
-org.jminiorm.IDeleteQuery <|-- org.jminiorm.IQueryTarget
-org.jminiorm.IQueryTarget <|-- org.jminiorm.IDatabase
-org.jminiorm.dialect.GenericSQLDialect <|-- org.jminiorm.dialect.PostgreSQLDialect
-org.jminiorm.IDatabaseConfig <|.. org.jminiorm.DatabaseConfig
-org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMInsertQuery
-org.jminiorm.query.generic.IGenericQuery <|-- org.jminiorm.query.generic.IGenericRawQuery
-org.jminiorm.query.orm.IORMUpdateQuery <|.. org.jminiorm.query.orm.ORMUpdateQuery
-org.jminiorm.query.orm.AbstractORMQuery <|-- org.jminiorm.query.orm.ORMUpdateQuery
-javax.persistence.AttributeConverter <|.. org.jminiorm.attributeconverter.EnumOrdinalAttributeConverter
-org.jminiorm.dialect.ISQLDialect <|.. org.jminiorm.dialect.GenericSQLDialect
-org.jminiorm.query.IQuery <|-- org.jminiorm.query.orm.IORMQuery
-org.jminiorm.exception.Exception <|-- org.jminiorm.exception.UnexpectedNumberOfItemsException
-org.jminiorm.result.IResult <|-- org.jminiorm.result.map.IMapResult
-org.jminiorm.query.generic.IGenericQuery <|-- org.jminiorm.query.generic.IGenericDeleteQuery
+org.proorm.IDatabase <|.. org.proorm.Database
+org.proorm.QueryTargetFactory <|-- org.proorm.Database
+org.proorm.result.object.IObjectResult <|.. org.proorm.result.object.ObjectResult
+org.proorm.result.AbstractResult <|-- org.proorm.result.object.ObjectResult
+org.proorm.executor.IStatementExecutor <|.. org.proorm.executor.AbstractStatementExecutor
+org.proorm.result.IResult <|.. org.proorm.result.AbstractResult
+org.proorm.query.generic.IGenericRawQuery <|.. org.proorm.query.generic.GenericRawQuery
+org.proorm.query.AbstractQuery <|-- org.proorm.query.generic.GenericRawQuery
+org.proorm.query.generic.IGenericInsertQuery <|.. org.proorm.query.generic.GenericInsertQuery
+org.proorm.query.AbstractQuery <|-- org.proorm.query.generic.GenericInsertQuery
+org.proorm.result.map.IMapResult <|.. org.proorm.result.map.MapResult
+org.proorm.result.AbstractResult <|-- org.proorm.result.map.MapResult
+org.proorm.query.IQuery <|-- org.proorm.query.orm.IORMQuery
+org.proorm.query.orm.IORMQuery <|-- org.proorm.query.orm.IORMDeleteQuery
+org.proorm.query.generic.IGenericQuery <|-- org.proorm.query.generic.IGenericUpdateQuery
+javax.persistence.AttributeConverter <|.. org.proorm.attributeconverter.EnumOrdinalAttributeConverter
+org.proorm.query.orm.IORMDropTableQuery <|.. org.proorm.query.orm.ORMDropTableQuery
+org.proorm.query.orm.AbstractORMQuery <|-- org.proorm.query.orm.ORMDropTableQuery
+org.proorm.query.generic.IGenericQuery <|-- org.proorm.query.generic.IGenericInsertQuery
+org.proorm.query.orm.IORMCreateTableQuery <|.. org.proorm.query.orm.ORMCreateTableQuery
+org.proorm.query.orm.AbstractORMQuery <|-- org.proorm.query.orm.ORMCreateTableQuery
+org.proorm.query.generic.IGenericQuery <|-- org.proorm.query.generic.IGenericSelectQuery
+org.proorm.result.IResult <|-- org.proorm.result.object.IObjectResult
+org.proorm.IQueryTarget <|.. org.proorm.QueryTargetFactory
+javax.persistence.AttributeConverter <|.. org.proorm.attributeconverter.EnumNameAttributeConverter
+org.proorm.query.orm.IORMUpdateQuery <|.. org.proorm.query.orm.ORMUpdateQuery
+org.proorm.query.orm.AbstractORMQuery <|-- org.proorm.query.orm.ORMUpdateQuery
+org.proorm.query.IQuery <|-- org.proorm.query.generic.IGenericQuery
+org.proorm.dialect.GenericSQLDialect <|-- org.proorm.dialect.PostgreSQLDialect
+org.proorm.mapping.provider.AbstractORMFactory <|-- org.proorm.mapping.provider.JPAORMFactory
+org.proorm.IQueryTarget <|-- org.proorm.IDatabase
+org.proorm.ISelectQuery <|-- org.proorm.IQueryTarget
+org.proorm.IInsertQuery <|-- org.proorm.IQueryTarget
+org.proorm.IUpdateQuery <|-- org.proorm.IQueryTarget
+org.proorm.ITableQuery <|-- org.proorm.IQueryTarget
+org.proorm.IDeleteQuery <|-- org.proorm.IQueryTarget
+org.proorm.query.orm.IORMDeleteQuery <|.. org.proorm.query.orm.ORMDeleteQuery
+org.proorm.query.orm.AbstractORMQuery <|-- org.proorm.query.orm.ORMDeleteQuery
+org.proorm.query.generic.IGenericQuery <|.. org.proorm.query.generic.AbstractGenericQuery
+org.proorm.query.AbstractQuery <|-- org.proorm.query.generic.AbstractGenericQuery
+org.proorm.query.IQuery <|.. org.proorm.query.AbstractQuery
+org.proorm.query.generic.IGenericDeleteQuery <|.. org.proorm.query.generic.GenericDeleteQuery
+org.proorm.query.generic.AbstractGenericQuery <|-- org.proorm.query.generic.GenericDeleteQuery
+org.proorm.exception.RuntimeException <|-- org.proorm.exception.DBException
+org.proorm.exception.Exception <|-- org.proorm.exception.UnexpectedNumberOfItemsException
+org.proorm.query.orm.IORMInsertQuery <|.. org.proorm.query.orm.ORMInsertQuery
+org.proorm.query.orm.AbstractORMQuery <|-- org.proorm.query.orm.ORMInsertQuery
+org.proorm.query.generic.IGenericQuery <|-- org.proorm.query.generic.IGenericRawQuery
+org.proorm.IDatabaseConfig <|.. org.proorm.DatabaseConfig
+org.proorm.mapping.type.IJDBCTypeMapper <|.. org.proorm.mapping.type.DefaultJDBCTypeMapper
+org.proorm.query.orm.IORMSelectQuery <|.. org.proorm.query.orm.ORMSelectQuery
+org.proorm.query.orm.AbstractORMQuery <|-- org.proorm.query.orm.ORMSelectQuery
+org.proorm.query.orm.IORMQuery <|-- org.proorm.query.orm.IORMCreateTableQuery
+org.proorm.executor.AbstractStatementExecutor <|-- org.proorm.executor.DefaultStatementExecutor
+org.proorm.query.orm.IORMQuery <|-- org.proorm.query.orm.IORMUpdateQuery
+org.proorm.query.generic.IGenericSelectQuery <|.. org.proorm.query.generic.GenericSelectQuery
+org.proorm.query.AbstractQuery <|-- org.proorm.query.generic.GenericSelectQuery
+org.proorm.mapping.provider.IORMappingProvider <|.. org.proorm.mapping.provider.AbstractORMFactory
+org.proorm.result.IResult <|-- org.proorm.result.map.IMapResult
+org.proorm.query.generic.IGenericUpdateQuery <|.. org.proorm.query.generic.GenericUpdateQuery
+org.proorm.query.AbstractQuery <|-- org.proorm.query.generic.GenericUpdateQuery
+org.proorm.query.orm.IORMQuery <|-- org.proorm.query.orm.IORMSelectQuery
+org.proorm.result.object.IObjectResult <|-- org.proorm.query.orm.IORMSelectQuery
+org.proorm.query.orm.IORMQuery <|-- org.proorm.query.orm.IORMDropTableQuery
+org.proorm.dialect.ISQLDialect <|.. org.proorm.dialect.GenericSQLDialect
+org.proorm.mapping.ORMapping <|-- org.proorm.mapping.JPAORMapping
+org.proorm.query.orm.IORMQuery <|.. org.proorm.query.orm.AbstractORMQuery
+org.proorm.query.AbstractQuery <|-- org.proorm.query.orm.AbstractORMQuery
+org.proorm.utils.RSUtils +.. org.proorm.utils.RSUtils$IPropertyReader
+org.proorm.utils.RSUtils +.. org.proorm.utils.RSUtils$MapPropertyReader
+org.proorm.utils.IPropertyReader <|.. org.proorm.utils.RSUtils$MapPropertyReader
+org.proorm.utils.RSUtils +.. org.proorm.utils.RSUtils$ObjectPropertyReader
+org.proorm.utils.IPropertyReader <|.. org.proorm.utils.RSUtils$ObjectPropertyReader
+javax.persistence.AttributeConverter <|.. org.proorm.attributeconverter.JsonAttributeConverter
+org.proorm.query.generic.IGenericQuery <|-- org.proorm.query.generic.IGenericDeleteQuery
+org.proorm.query.orm.IORMQuery <|-- org.proorm.query.orm.IORMInsertQuery
+java.util.LinkedHashMap <|-- org.proorm.utils.CaseInsensitiveMap
 @enduml

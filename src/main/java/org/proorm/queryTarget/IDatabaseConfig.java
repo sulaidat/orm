@@ -1,4 +1,4 @@
-package org.proorm;
+package org.proorm.queryTarget;
 
 import org.proorm.dialect.ISQLDialect;
 import org.proorm.executor.IStatementExecutor;

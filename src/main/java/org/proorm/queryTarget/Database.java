@@ -1,11 +1,11 @@
-package org.proorm;
+package org.proorm.queryTarget;
 
 import org.proorm.exception.DBException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class Database extends AbstractQueryTarget implements IDatabase {
+public class Database extends QueryTargetFactory implements IDatabase {
 
     private IDatabaseConfig config;
 

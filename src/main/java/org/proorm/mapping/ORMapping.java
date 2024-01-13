@@ -1,7 +1,6 @@
 package org.proorm.mapping;
 
 import org.proorm.exception.DBException;
-import org.proorm.utils.CaseInsensitiveMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,6 @@ public class ORMapping {
     private Class<?> clazz;
     private String schema;
     private String tableName;
-//    private List<Index> indexes;
     private List<ColumnMapping> columnMappings;
     private CaseInsensitiveMap<ColumnMapping> columnMappingsIndexedByProperty;
     private CaseInsensitiveMap<ColumnMapping> columnMappingsIndexedByColumn;
@@ -48,14 +46,6 @@ public class ORMapping {
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }
-
-//    public List<Index> getIndexes() {
-//        return indexes;
-//    }
-//
-//    public void setIndexes(List<Index> indexes) {
-//        this.indexes = indexes;
-//    }
 
     public List<ColumnMapping> getColumnMappings() {
         return columnMappings;

@@ -1,6 +1,6 @@
 package org.proorm.query;
 
-import org.proorm.IQueryTarget;
+import org.proorm.queryTarget.IQueryTarget;
 
 public class AbstractQuery implements IQuery {
 

@@ -1,4 +1,4 @@
-package org.proorm.utils;
+package org.proorm.mapping;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

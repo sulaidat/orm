@@ -1,4 +1,4 @@
-package org.proorm;
+package org.proorm.queryTarget;
 
 import org.proorm.crud.*;
 import org.proorm.exception.DBException;
