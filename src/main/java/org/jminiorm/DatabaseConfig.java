@@ -19,6 +19,17 @@ public class DatabaseConfig implements IDatabaseConfig {
     private IJDBCTypeMapper typeMapper;
     private IStatementExecutor executor;
 
+    private static DatabaseConfig instance;
+
+    private DatabaseConfig(){};
+
+    public static DatabaseConfig getInstance(){
+        if(instance==null){
+            instance = new DatabaseConfig();
+        }
+        return instance;
+    }
+
     @Override
     public DataSource getDataSource() {
         return dataSource;

@@ -81,7 +81,6 @@ public class TestQueries {
     @Test
     public void testTest() throws Exception {
         Database db;
-        IDatabaseConfig config;
 
         // Create a DataSource for your database connection:
         PGSimpleDataSource ds = new PGSimpleDataSource();
@@ -90,13 +89,13 @@ public class TestQueries {
         ds.setPassword("1HYm8DGIlaZjfZuC56KC6miLZlArJdwd");
 
         // Pass datasource, statement executor and dialect to the database config:
-        config = new DatabaseConfig();
-        config.dataSource(ds)
+
+        DatabaseConfig.getInstance().dataSource(ds)
                 .statementExecutor(new DefaultStatementExecutor())
                 .dialect(new PostgreSQLDialect())
                 .build();
 
-        db = new Database(config);
+        db = new Database(DatabaseConfig.getInstance());
         testQueriesOnDatabase(db);
     }
 
