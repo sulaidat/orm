@@ -22,20 +22,7 @@ public abstract class AbstractORMQuery<T> extends AbstractQuery implements IORMQ
         return clazz;
     }
 
-    /**
-     * Returns the object-relational mapping for the jpa-annotated class this query is about.
-     *
-     * @return
-     */
     protected ORMapping getMapping() {
         return getQueryTarget().getConfig().getORMappingProvider().getORMapping(getTargetClass());
     }
-
-//    protected void verifySchemaExistence() {
-//        String schema = getMapping().getSchema();
-//        if (schema != null && !schema.isEmpty()) {
-//            String sql = getQueryTarget().getConfig().getDialect().sqlForCreateSchema(schema);
-//            if (sql != null) getQueryTarget().sql(sql);
-//        }
-//    }
 }

@@ -11,10 +11,6 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Populates the mapping using JPA annotations.
- */
 public class JPAORMapping extends ORMapping {
 
     public JPAORMapping(Class<?> clazz) {
@@ -101,13 +97,6 @@ public class JPAORMapping extends ORMapping {
         setColumnMappings(columnMappings);
     }
 
-    /**
-     * Returns the Field object corresponding of the given property name or null if none was found.
-     *
-     * @param clazz
-     * @param name
-     * @return
-     */
     protected static Field getField(Class<?> clazz, String name) {
         Class<?> current = clazz;
         while (current != null) {

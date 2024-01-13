@@ -6,9 +6,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * Represents the mapping between a java property and a database column.
- */
 public class ColumnMapping {
 
     private PropertyDescriptor propertyDescriptor;
@@ -123,12 +120,6 @@ public class ColumnMapping {
         this.converter = converter;
     }
 
-    /**
-     * Utility method that reads the value of the property this mapping is about.
-     *
-     * @param bean
-     * @return
-     */
     public Object getValue(Object bean) {
         try {
             Object value = getPropertyDescriptor().getReadMethod().invoke(bean);
@@ -138,12 +129,6 @@ public class ColumnMapping {
         }
     }
 
-    /**
-     * Utility method that writes the value of the property this mapping is about.
-     *
-     * @param bean
-     * @return
-     */
     public void writeProperty(Object bean, Object value) {
         try {
             Object converted = converter == null ? value : converter.convertToEntityAttribute(value);

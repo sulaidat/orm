@@ -14,7 +14,6 @@ public class GenericSelectQuery extends AbstractQuery implements IGenericSelectQ
 
     private String sql;
     private List<Object> params;
-//    private String groupBy;
 
     public GenericSelectQuery(IQueryTarget target) {
         super(target);
@@ -38,7 +37,6 @@ public class GenericSelectQuery extends AbstractQuery implements IGenericSelectQ
     }
     protected String getSQL() {
         return getQueryTarget().getConfig().getDialect().sqlForSelect(sql, null, null);
-//        return getQueryTarget().getConfig().getDialect().sqlForSelect(sql, null, null);
     }
 }
 

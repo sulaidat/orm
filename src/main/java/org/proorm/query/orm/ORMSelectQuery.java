@@ -87,20 +87,10 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
         return getResult().list();
     }
 
-    /**
-     * Returns the result set.
-     *
-     * @return
-     */
     protected IObjectResult<T> getResult() {
         return getQueryTarget().select(buildSQL(), params.toArray()).toObject(getTargetClass());
     }
 
-    /**
-     * Builds the SQL select to get the rows from the database.
-     *
-     * @return
-     */
     protected String buildSQL() {
         // The table to select from :
         String tableName = getMapping().getTableName();

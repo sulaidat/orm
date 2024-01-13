@@ -4,10 +4,6 @@ import org.proorm.mapping.ORMapping;
 
 import java.util.List;
 
-/**
- * Interface of objects responsible for turing the data that defines queries into executable SQL statements. The
- * implementation is database-specific.
- */
 public interface ISQLDialect {
 
     String sqlForDelete(String table, List<String> idColumns);

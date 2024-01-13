@@ -12,10 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * An implementation that tries to be compatible with most databases. Subclass as needed to provide support for specific
- * databases.
- */
 public class GenericSQLDialect implements ISQLDialect {
 
     @Override

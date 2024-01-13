@@ -43,27 +43,13 @@ public abstract class AbstractResult<T> implements IResult<T> {
         Stream<T> stream2 = stream.map(this::castRow);
         List<T> res = stream2.collect(Collectors.toList());
         return res;
-//        return rawResult.stream()
-//                .map(this::castRow)
-//                .collect(Collectors.toList());
     }
 
     protected IQueryTarget getQueryTarget() {
         return queryTarget;
     }
 
-    /**
-     * Cast the row into type T.
-     *
-     * @param row
-     * @return
-     */
     protected abstract T castRow(Map<String, Object> row);
 
-    /**
-     * Return the column name => Java type mappings to use when executing the query.
-     *
-     * @return
-     */
     protected abstract Map<String, Class<?>> typeMappings();
 }

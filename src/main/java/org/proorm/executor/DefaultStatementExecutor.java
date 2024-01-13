@@ -7,9 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The default implementation of IStatementExecutor.
- */
 public class DefaultStatementExecutor extends AbstractStatementExecutor {
 
     @Override

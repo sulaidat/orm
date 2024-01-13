@@ -19,12 +19,6 @@ public class GenericInsertQuery extends AbstractQuery implements IGenericInsertQ
         super(target);
     }
 
-//    @Override
-//    public IGenericInsertQuery schema(String schema) {
-//        this.schema = schema;
-//        return this;
-//    }
-
     @Override
     public IGenericInsertQuery table(String table) {
         this.table = table;
