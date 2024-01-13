@@ -85,11 +85,16 @@ public class GenericSQLDialect implements ISQLDialect {
     }
 
     protected String sqlForSelectIdEscaped(String schema, List<String> columns, String table, String where, String groupBy, String having) {
-        return "SELECT " + String.join(", ", columns) + "\n" +
-                "FROM " + schemaPrefix(schema) + table + "\n" +
-                (where == null ? "" : ("WHERE " + where + "\n")) +
-                (groupBy == null ? "" : ("GROUP BY " + groupBy + "\n")) +
-                (having == null ? "" : ("HAVING " + having + "\n"));
+        if(groupBy!=null && having != null) {
+            return "SELECT " + String.join(", ", columns) + "\n" +
+                    "FROM " + schemaPrefix(schema) + table + "\n" +
+                    (where == null ? "" : ("WHERE " + where + "\n")) +
+                    (groupBy == null ? "" : ("GROUP BY " + groupBy + "\n")) +
+                    (having == null ? "" : ("HAVING " + having + "\n"));
+        }
+        else{
+            return sqlForSelectIdEscaped(schema, columns, table, where);
+        }
     }
 
     @Override
