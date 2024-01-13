@@ -20,8 +20,8 @@ public class ORMCreateTableQuery<T> extends AbstractORMQuery<T> implements IORMC
 
         String sql = getQueryTarget().getConfig().getDialect().sqlForCreateTable(getMapping());
         getQueryTarget().sql(sql);
-        for (String s : getQueryTarget().getConfig().getDialect().sqlForCreateIndexes(getMapping())) {
-            getQueryTarget().sql(s);
-        }
+//        for (String s : getQueryTarget().getConfig().getDialect().sqlForCreateIndexes(getMapping())) {
+//            getQueryTarget().sql(s);
+//        }
     }
 }

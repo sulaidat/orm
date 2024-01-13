@@ -35,7 +35,7 @@ public class ORMInsertQuery<T> extends AbstractORMQuery<T> implements IORMInsert
 	public void execute() throws DBException {
 		if (!objs.isEmpty()) {
 			// The table to insert the rows into :
-			String table = getMapping().getTable();
+			String table = getMapping().getTableName();
 
 			// The column mappings for all insertable columns that are not generated :
 			List<ColumnMapping> relevantColumnMappings = new ArrayList<>();

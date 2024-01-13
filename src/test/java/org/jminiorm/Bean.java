@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-@Table(name = "beans", indexes = {@Index(name = "shortTextIndex", columnList = "short_text")})
+@Table(name = "beans")
 public class Bean {
 
     @Id

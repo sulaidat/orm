@@ -6,7 +6,7 @@ import org.jminiorm.mapping.ORMapping;
 /**
  * A mapping provider that uses JPA annotations.
  */
-public class JPAORMappingProvider extends AbstractORMappingProvider {
+public class JPAORMFactory extends AbstractORMFactory {
 
     @Override
     protected ORMapping createORMapping(Class<?> clazz) {

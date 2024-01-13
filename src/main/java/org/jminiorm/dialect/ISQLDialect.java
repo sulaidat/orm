@@ -22,7 +22,7 @@ public interface ISQLDialect {
 
     String sqlForSelect(String schema, List<String> columns, String table, String where, String orderBy);
 
-//    String sqlForSelect(String schema, List<String> columns, String table, String where, String groupBy, String
+//    String sqlForSelect(List<String> columns, String table, String where, String groupBy, String
 //    having);
 
     String sqlForCreateTable(ORMapping mapping);
@@ -31,7 +31,7 @@ public interface ISQLDialect {
 
     String sqlForCreateSchema(String schema);
 
-    List<String> sqlForCreateIndexes(ORMapping mapping);
+//    List<String> sqlForCreateIndexes(ORMapping mapping);
 
     SetNullParameterMethod getSetNullParameterMethod();
 }

@@ -34,7 +34,9 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
     }
 
     @Override
-    public IORMSelectQuery<T> groupBy(String groupBy) {
+    public IORMSelectQuery<T> groupBy(String groupBy, Object... params) {
+        this.groupBy = groupBy;
+        this.params = Arrays.asList(params);
         return this;
     }
 
@@ -88,7 +90,7 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
      */
     protected String buildSQL() {
         // The table to select from :
-        String table = getMapping().getTable();
+        String tableName = getMapping().getTableName();
 
         // The columns to put in the select list :
         List<String> columns = new ArrayList<>();
@@ -97,8 +99,8 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
         }
 
         // Generate sql :
-        return getQueryTarget().getConfig().getDialect().sqlForSelect(getMapping().getSchema(), columns, table, where
-                , null);
+        return getQueryTarget().getConfig().getDialect().sqlForSelect(getMapping().getSchema(), columns, tableName, where
+                ,null);
     }
 
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Base class for mapping providers.
  */
-public abstract class AbstractORMappingProvider implements IORMappingProvider {
+public abstract class AbstractORMFactory implements IORMappingProvider {
 
     private Map<Class<?>, ORMapping> mappings = new HashMap<>();
 

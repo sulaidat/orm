@@ -1,9 +1,7 @@
 package org.jminiorm.dialect;
 
 import org.jminiorm.attributeconverter.AttributeConverterUtils;
-import org.jminiorm.exception.DBException;
 import org.jminiorm.mapping.ColumnMapping;
-import org.jminiorm.mapping.Index;
 import org.jminiorm.mapping.ORMapping;
 
 import java.math.BigDecimal;
@@ -90,13 +88,13 @@ public class GenericSQLDialect implements ISQLDialect {
 
     @Override
     public String sqlForDropTable(ORMapping mapping) {
-        return "DROP TABLE IF EXISTS " + identifier(mapping.getSchema(), mapping.getTable());
+        return "DROP TABLE IF EXISTS " + identifier(mapping.getSchema(), mapping.getTableName());
     }
 
     @Override
     public String sqlForCreateTable(ORMapping mapping) {
         StringBuilder sb = new StringBuilder();
-        sb.append("CREATE TABLE ").append(identifier(mapping.getSchema(), mapping.getTable())).append(" (");
+        sb.append("CREATE TABLE ").append(identifier(mapping.getSchema(), mapping.getTableName())).append(" (");
         List<String> columns = new ArrayList<>();
         for (ColumnMapping columnMapping : mapping.getColumnMappings()) {
             columns.add(sqlForColumnDefinition(columnMapping));
@@ -176,30 +174,30 @@ public class GenericSQLDialect implements ISQLDialect {
     }
 
     protected String sqlForPrimaryKey(ORMapping mapping, List<ColumnMapping> idColumnMappings) {
-        return "CONSTRAINT " + identifier(mapping.getTable() + "_pk") + " PRIMARY KEY ("
+        return "CONSTRAINT " + identifier(mapping.getTableName() + "_pk") + " PRIMARY KEY ("
                 + String.join(", ", identifiers(idColumnMappings.stream().map(ColumnMapping::getColumn).collect(Collectors.toList()))) + ")";
     }
 
-    @Override
-    public List<String> sqlForCreateIndexes(ORMapping mapping) {
-        List<String> sqls = new ArrayList<>();
-        for (Index index : mapping.getIndexes()) {
-            sqls.add(sqlForIndex(mapping.getSchema(), index, mapping.getTable()));
-        }
-        return sqls;
-    }
-
-    protected String sqlForIndex(String schema, Index index, String table) {
-        String name = index.getName();
-        if (name == null || name.equals("")) {
-            name = table + "__" + index.getColumns().replaceAll(" ", "").replaceAll(",", "_");
-        }
-        String sql = "CREATE " + (index.isUnique() ? "UNIQUE " : "") + "INDEX " + name + " ON " +
-                identifier(schema, table) + " (" +
-                index.getColumns() +
-                ")";
-        return sql;
-    }
+//    @Override
+//    public List<String> sqlForCreateIndexes(ORMapping mapping) {
+//        List<String> sqls = new ArrayList<>();
+//        for (Index index : mapping.getIndexes()) {
+//            sqls.add(sqlForIndex(mapping.getSchema(), index, mapping.getTable()));
+//        }
+//        return sqls;
+//    }
+//
+//    protected String sqlForIndex(String schema, Index index, String table) {
+//        String name = index.getName();
+//        if (name == null || name.equals("")) {
+//            name = table + "__" + index.getColumns().replaceAll(" ", "").replaceAll(",", "_");
+//        }
+//        String sql = "CREATE " + (index.isUnique() ? "UNIQUE " : "") + "INDEX " + name + " ON " +
+//                identifier(schema, table) + " (" +
+//                index.getColumns() +
+//                ")";
+//        return sql;
+//    }
 
     /**
      * Produced a list of question marks.

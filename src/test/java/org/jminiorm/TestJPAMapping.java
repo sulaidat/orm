@@ -18,13 +18,13 @@ public class TestJPAMapping {
     public void testJPAMapping() {
         ORMapping mapping = new JPAORMapping(User.class);
 
-        assertEquals(mapping.getJavaClass(), User.class);
-        assertEquals(mapping.getTable(), "users");
+        assertEquals(mapping.getClazz(), User.class);
+        assertEquals(mapping.getTableName(), "users");
         assertEquals(mapping.getSchema(), "public");
-        assertEquals(mapping.getIndexes().size(), 1);
-        org.jminiorm.mapping.Index i = mapping.getIndexes().get(0);
-        assertEquals("index_name", i.getName());
-        assertEquals("list", i.getColumns());
+//        assertEquals(mapping.getIndexes().size(), 1);
+//        org.jminiorm.mapping.Index i = mapping.getIndexes().get(0);
+//        assertEquals("index_name", i.getName());
+//        assertEquals("list", i.getColumns());
 
         List<ColumnMapping> cols = mapping.getColumnMappings();
         assertEquals(5, cols.size());

@@ -30,9 +30,10 @@ public interface IORMSelectQuery<T> extends IORMQuery<T>, IObjectResultSet<T> {
     /**
      * Sets the group by clause and returns this.
      * @param groupBy
+     * @param params
      * @return
      */
-    IORMSelectQuery<T> groupBy(String groupBy);
+    IORMSelectQuery<T> groupBy(String groupBy, Object... params);
 
     /**
      * Sets the having clause and returns this.
