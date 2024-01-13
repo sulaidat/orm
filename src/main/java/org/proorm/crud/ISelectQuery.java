@@ -34,4 +34,6 @@ public interface ISelectQuery {
      * @return
      */
     IGenericSelectQuery select(String sql, Object... params);
+
+//    <T> IORMSelectQuery select(String sql, Object... params);
 }
