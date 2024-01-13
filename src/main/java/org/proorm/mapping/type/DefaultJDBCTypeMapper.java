@@ -4,9 +4,6 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * The default implementation returns all integer numbers as Long, timestamps as LocalDateTime and dates as LocalDate.
- */
 public class DefaultJDBCTypeMapper implements IJDBCTypeMapper {
 
     @Override

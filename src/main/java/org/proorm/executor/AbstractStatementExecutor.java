@@ -73,18 +73,6 @@ public abstract class AbstractStatementExecutor implements IStatementExecutor {
             setObject(target, stmt, i, params.get(i - 1));
         }
     }
-
-    /**
-     * The method tries to use the JDBC 4.0 methods as much as possible, only using JDBC 4.1 getObject() as a last
-     * resort, because it's not supported by some drivers (notably Sybase JConnect 7.07).
-     *
-     * @param rs
-     * @param metaData
-     * @param columnIndex
-     * @param type
-     * @return
-     * @throws DBException
-     */
     protected Object getObject(IQueryTarget target, ResultSet rs, ResultSetMetaData metaData, int columnIndex,
                                Class<?> type)
             throws DBException {
@@ -181,15 +169,6 @@ public abstract class AbstractStatementExecutor implements IStatementExecutor {
             throw new DBException(e);
         }
     }
-
-    /**
-     * Returns the index of the generated column in the generated keys result set.
-     *
-     * @param rs
-     * @param generatedColumn
-     * @return
-     * @throws SQLException
-     */
     protected int getGeneratedColumnIndex(IQueryTarget target, ResultSet rs, String generatedColumn)
             throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();

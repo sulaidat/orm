@@ -25,11 +25,6 @@ public abstract class QueryTargetFactory implements IQueryTarget {
         return new GenericSelectQuery(this).sql(sql, params);
     }
 
-//    @Override
-//    public <T> IORMSelectQuery select(String sql, Object... params) {
-//        return new ORMSelectQuery<T>(this).sql(sql, params);
-//    }
-
     @Override
     public <T> IORMInsertQuery<T> insert(Class<T> clazz) {
         return new ORMInsertQuery<T>(this).forClass(clazz);

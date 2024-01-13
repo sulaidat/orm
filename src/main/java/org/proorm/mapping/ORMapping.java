@@ -4,10 +4,6 @@ import org.proorm.exception.DBException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Represents the mapping between a Java class and a database table.
- */
 public class ORMapping {
 
     private Class<?> clazz;
@@ -55,12 +51,6 @@ public class ORMapping {
         this.columnMappings = columnMappings;
     }
 
-    /**
-     * Returns the column mapping for the given property. Case doesn't matter.
-     *
-     * @param property
-     * @return
-     */
     public ColumnMapping getColumnMappingByProperty(String property) {
         if (columnMappingsIndexedByProperty == null) {
             columnMappingsIndexedByProperty = createColumnMappingsIndexedByProperty();
@@ -76,12 +66,6 @@ public class ORMapping {
         return mappings;
     }
 
-    /**
-     * Returns the column mapping for the given column. Case doesn't matter.
-     *
-     * @param column
-     * @return
-     */
     public ColumnMapping getColumnMappingByColumn(String column) {
         if (columnMappingsIndexedByColumn == null) {
             columnMappingsIndexedByColumn = createColumnMappingsIndexedByColumn();
@@ -97,9 +81,6 @@ public class ORMapping {
         return mappings;
     }
 
-    /**
-     * Returns the column mappings for the properties marked as id.
-     */
     public List<ColumnMapping> getIdColumnMappings() {
         if (idColumnMappings == null) {
             idColumnMappings = new ArrayList<>();

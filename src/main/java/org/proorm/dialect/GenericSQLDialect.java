@@ -12,10 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * An implementation that tries to be compatible with most databases. Subclass as needed to provide support for specific
- * databases.
- */
 public class GenericSQLDialect implements ISQLDialect {
 
     @Override
@@ -85,11 +81,15 @@ public class GenericSQLDialect implements ISQLDialect {
     }
 
     protected String sqlForSelectIdEscaped(List<String> columns, String table, String where, String groupBy, String having) {
+        if(having!=null && groupBy==null){
+            return sqlForSelectIdEscaped(columns,table,where);
+        }
         return "SELECT " + String.join(", ", columns) + "\n" +
                 "FROM " + table + "\n" +
                 (where == null ? "" : ("WHERE " + where + "\n")) +
                 (groupBy == null ? "" : ("GROUP BY " + groupBy + "\n")) +
                 (having == null ? "" : ("HAVING " + having + "\n"));
+
     }
 
     @Override
