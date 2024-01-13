@@ -121,7 +121,7 @@ public class TestQueries {
         b1.setSomeInt(1);
         b1.setSomeBoolean(true);
         b1.setShortText("short text");
-        b1.setLongText("long text");
+        b1.setLongText("long text abcdxyz12345678910 tin dep trai");
         b1.setBytes("some bytes".getBytes(StandardCharsets.UTF_8));
         b1.setSubBeans(Arrays.asList(new SubBean(1), new SubBean(2)));
         b1.setTestNameEnum(EnumerationTest.FIRST);

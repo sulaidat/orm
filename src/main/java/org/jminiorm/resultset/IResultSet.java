@@ -38,4 +38,6 @@ public interface IResultSet<T> {
      */
     List<T> list() throws DBException;
 
+    List<T> count() throws DBException;
+
 }

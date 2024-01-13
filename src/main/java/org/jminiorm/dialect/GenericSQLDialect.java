@@ -87,11 +87,16 @@ public class GenericSQLDialect implements ISQLDialect {
     }
 
     protected String sqlForSelectIdEscaped(String schema, List<String> columns, String table, String where, String groupBy, String having) {
-        return "SELECT " + String.join(", ", columns) + "\n" +
-                "FROM " + schemaPrefix(schema) + table + "\n" +
-                (where == null ? "" : ("WHERE " + where + "\n")) +
-                (groupBy == null ? "" : ("GROUP BY " + groupBy + "\n")) +
-                (having == null ? "" : ("HAVING " + having + "\n"));
+        if(groupBy!=null && having != null) {
+            return "SELECT " + String.join(", ", columns) + "\n" +
+                    "FROM " + schemaPrefix(schema) + table + "\n" +
+                    (where == null ? "" : ("WHERE " + where + "\n")) +
+                    (groupBy == null ? "" : ("GROUP BY " + groupBy + "\n")) +
+                    (having == null ? "" : ("HAVING " + having + "\n"));
+        }
+        else{
+            return sqlForSelectIdEscaped(schema, columns, table, where);
+        }
     }
 
     @Override
@@ -248,17 +253,11 @@ public class GenericSQLDialect implements ISQLDialect {
         return identifier(identifier, false);
     }
 
-    /**
-     * Escapes and quotes the table identifier.
-     */
+
     protected String identifier(String schema, String identifier) {
         return schemaPrefix(quoteIdentifier(schema)) + quoteIdentifier(identifier);
     }
 
-    /**
-     * Quotes the identifier. Does nothing by default, so that you can leave identifiers unquoted in your statements as
-     * well without having case-sensitivity problems with some databases.
-     */
     protected String quoteIdentifier(String identifier) {
         return identifier;
     }
