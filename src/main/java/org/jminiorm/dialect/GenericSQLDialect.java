@@ -76,8 +76,8 @@ public class GenericSQLDialect implements ISQLDialect {
         return sqlForSelectIdEscaped(quoteIdentifier(schema), identifiers(columns), identifier(table), where);
     }
     @Override
-    public final String sqlForSelectWhereOrderBy(String schema, List<String> columns, String table, String where, String orderBy) {
-        return sqlForSelectIdEscaped(quoteIdentifier(schema), identifiers(columns), identifier(table), where, orderBy);
+    public final String sqlForSelect(String schema, List<String> columns, String table, String where, String groupBy, String having) {
+        return sqlForSelectIdEscaped(quoteIdentifier(schema), identifiers(columns), identifier(table), where, groupBy, having);
     }
 
     protected String sqlForSelectIdEscaped(String schema, List<String> columns, String table, String where) {
@@ -86,11 +86,12 @@ public class GenericSQLDialect implements ISQLDialect {
                 (where == null ? "" : ("WHERE " + where + "\n"));
     }
 
-    protected String sqlForSelectIdEscaped(String schema, List<String> columns, String table, String where, String orderBy) {
+    protected String sqlForSelectIdEscaped(String schema, List<String> columns, String table, String where, String groupBy, String having) {
         return "SELECT " + String.join(", ", columns) + "\n" +
                 "FROM " + schemaPrefix(schema) + table + "\n" +
                 (where == null ? "" : ("WHERE " + where + "\n")) +
-                (orderBy == null ? "" : ("ORDER BY " + orderBy + "\n"));
+                (groupBy == null ? "" : ("GROUP BY " + groupBy + "\n")) +
+                (having == null ? "" : ("HAVING " + having + "\n"));
     }
 
     @Override

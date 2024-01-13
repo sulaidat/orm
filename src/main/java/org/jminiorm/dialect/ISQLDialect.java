@@ -22,7 +22,7 @@ public interface ISQLDialect {
 
     String sqlForSelectWhere(String schema, List<String> columns, String table, String where);
 
-    String sqlForSelectWhereOrderBy(String schema, List<String> columns, String table, String where, String orderBy);
+    String sqlForSelect(String schema, List<String> columns, String table, String where, String groupBy, String having);
 
     String sqlForCreateTable(ORMapping mapping);
 
