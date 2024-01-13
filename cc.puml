@@ -84,8 +84,10 @@ class org.jminiorm.executor.SLF4JLoggingStatementExecutor {
 class org.jminiorm.mapping.type.DefaultJDBCTypeMapper {
 + Class<?> getJavaType(int)
 }
-class org.jminiorm.result.ObjectResult {
-- Class<T> targetClass
+interface org.jminiorm.result.object.IObjectResult {
+}
+class org.jminiorm.result.object.ObjectResult {
+- Class<T> clazz
 # T castRow(Map<String,Object>)
 # Object canonicalValue(Class<?>)
 # ORMapping getMapping()
@@ -155,9 +157,7 @@ class org.jminiorm.query.generic.GenericSelectQuery {
 - String sql
 - List<Object> params
 + IGenericSelectQuery sql(String,Object)
-+ IPrimitiveResult<T> asPrimitive(Class<T>)
-+ IMapResult<Object> asMap()
-+ IMapResult<T> asMap(Class<T>)
++ IMapResult<Object> toMap()
 + IObjectResult<T> toObject(Class<T>)
 # String getSQL()
 }
@@ -174,8 +174,6 @@ abstract class org.jminiorm.mapping.provider.AbstractORMFactory {
 # {abstract}ORMapping createORMapping(Class<?>)
 }
 abstract class org.jminiorm.query.generic.AbstractGenericQuery {
-}
-interface org.jminiorm.result.IMapResult {
 }
 abstract class org.jminiorm.query.orm.AbstractORMQuery {
 - Class<T> clazz
@@ -220,11 +218,6 @@ abstract class org.jminiorm.result.AbstractResult {
 # {abstract}T castRow(Map<String,Object>)
 # {abstract}Map<String,Class<?>> typeMappings()
 }
-class org.jminiorm.result.MapResult {
-- Class<V> type
-# Map<String,V> castRow(Map<String,Object>)
-# Map<String,Class<?>> typeMappings()
-}
 class org.jminiorm.query.orm.ORMDeleteQuery {
 - List<List<Object>> ids
 - String where
@@ -257,13 +250,9 @@ abstract class org.jminiorm.executor.AbstractStatementExecutor {
 # void setObject(IQueryTarget,PreparedStatement,int,Object)
 # int getGeneratedColumnIndex(IQueryTarget,ResultSet,String)
 }
-interface org.jminiorm.result.IPrimitiveResult {
-}
 interface org.jminiorm.query.generic.IGenericSelectQuery {
 ~ IGenericSelectQuery sql(String,Object)
-~ IPrimitiveResult<T> asPrimitive(Class<T>)
-~ IMapResult<Object> asMap()
-~ IMapResult<T> asMap(Class<T>)
+~ IMapResult<Object> toMap()
 ~ IObjectResult<T> toObject(Class<T>)
 }
 interface org.jminiorm.mapping.type.IJDBCTypeMapper {
@@ -281,11 +270,6 @@ interface org.jminiorm.query.generic.IGenericUpdateQuery {
 class org.jminiorm.query.orm.ORMCreateTableQuery {
 + IORMCreateTableQuery<T> forClass(Class<T>)
 + void execute()
-}
-class org.jminiorm.result.PrimitiveResult {
-- Class<T> targetClass
-# T castRow(Map<String,Object>)
-# Map<String,Class<?>> typeMappings()
 }
 interface org.jminiorm.query.orm.IORMDeleteQuery {
 ~ IORMDeleteQuery<T> forClass(Class<T>)
@@ -367,8 +351,6 @@ interface org.jminiorm.query.orm.IORMCreateTableQuery {
 ~ IORMCreateTableQuery<T> forClass(Class<T>)
 ~ void execute()
 }
-interface org.jminiorm.result.IObjectResult {
-}
 interface org.jminiorm.query.orm.IORMSelectQuery {
 ~ IORMSelectQuery<T> forClass(Class<T>)
 ~ IORMSelectQuery<T> where(String,Object)
@@ -407,6 +389,11 @@ interface org.jminiorm.dialect.ISQLDialect {
 ~ String sqlForDropTable(ORMapping)
 ~ String sqlForCreateSchema(String)
 ~ SetNullParameterMethod getSetNullParameterMethod()
+}
+class org.jminiorm.result.map.MapResult {
+- Class<V> type
+# Map<String,V> castRow(Map<String,Object>)
+# Map<String,Class<?>> typeMappings()
 }
 class org.jminiorm.Database {
 - IDatabaseConfig config
@@ -558,6 +545,8 @@ class org.jminiorm.mapping.ORMapping {
 + ColumnMapping getIdColumnMapping()
 + Boolean hasId()
 }
+interface org.jminiorm.result.map.IMapResult {
+}
 interface org.jminiorm.query.generic.IGenericDeleteQuery {
 ~ IGenericDeleteQuery schema(String)
 ~ IGenericDeleteQuery table(String)
@@ -583,8 +572,9 @@ org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.generic.GenericUpdateQu
 org.jminiorm.executor.IStatementExecutor <|.. org.jminiorm.executor.AbstractLoggingStatementExecutor
 org.jminiorm.executor.AbstractLoggingStatementExecutor <|-- org.jminiorm.executor.SLF4JLoggingStatementExecutor
 org.jminiorm.mapping.type.IJDBCTypeMapper <|.. org.jminiorm.mapping.type.DefaultJDBCTypeMapper
-org.jminiorm.result.IObjectResult <|.. org.jminiorm.result.ObjectResult
-org.jminiorm.result.AbstractResult <|-- org.jminiorm.result.ObjectResult
+org.jminiorm.result.IResult <|-- org.jminiorm.result.object.IObjectResult
+org.jminiorm.result.object.IObjectResult <|.. org.jminiorm.result.object.ObjectResult
+org.jminiorm.result.AbstractResult <|-- org.jminiorm.result.object.ObjectResult
 org.jminiorm.query.generic.IGenericDeleteQuery <|.. org.jminiorm.query.generic.GenericDeleteQuery
 org.jminiorm.query.generic.AbstractGenericQuery <|-- org.jminiorm.query.generic.GenericDeleteQuery
 org.jminiorm.query.generic.IGenericInsertQuery <|.. org.jminiorm.query.generic.GenericInsertQuery
@@ -598,7 +588,6 @@ org.jminiorm.dialect.GenericSQLDialect <|-- org.jminiorm.dialect.SybaseASASQLDia
 org.jminiorm.mapping.provider.IORMappingProvider <|.. org.jminiorm.mapping.provider.AbstractORMFactory
 org.jminiorm.query.generic.IGenericQuery <|.. org.jminiorm.query.generic.AbstractGenericQuery
 org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.generic.AbstractGenericQuery
-org.jminiorm.result.IResult <|-- org.jminiorm.result.IMapResult
 org.jminiorm.query.orm.IORMQuery <|.. org.jminiorm.query.orm.AbstractORMQuery
 org.jminiorm.query.AbstractQuery <|-- org.jminiorm.query.orm.AbstractORMQuery
 org.jminiorm.executor.AbstractStatementExecutor <|-- org.jminiorm.executor.DefaultStatementExecutor
@@ -606,21 +595,16 @@ org.jminiorm.exception.RuntimeException <|-- org.jminiorm.exception.DBException
 java.util.LinkedHashMap <|-- org.jminiorm.utils.CaseInsensitiveMap
 org.jminiorm.mapping.provider.AbstractORMFactory <|-- org.jminiorm.mapping.provider.JPAORMFactory
 org.jminiorm.result.IResult <|.. org.jminiorm.result.AbstractResult
-org.jminiorm.result.IMapResult <|.. org.jminiorm.result.MapResult
-org.jminiorm.result.AbstractResult <|-- org.jminiorm.result.MapResult
 org.jminiorm.query.orm.IORMDeleteQuery <|.. org.jminiorm.query.orm.ORMDeleteQuery
 org.jminiorm.query.orm.AbstractORMQuery <|-- org.jminiorm.query.orm.ORMDeleteQuery
 org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMDropTableQuery
 org.jminiorm.executor.AbstractStatementExecutor <|-- org.jminiorm.executor.BatchStatementExecutor
 javax.persistence.AttributeConverter <|.. org.jminiorm.attributeconverter.EnumNameAttributeConverter
 org.jminiorm.executor.IStatementExecutor <|.. org.jminiorm.executor.AbstractStatementExecutor
-org.jminiorm.result.IResult <|-- org.jminiorm.result.IPrimitiveResult
 org.jminiorm.query.generic.IGenericQuery <|-- org.jminiorm.query.generic.IGenericSelectQuery
 org.jminiorm.query.generic.IGenericQuery <|-- org.jminiorm.query.generic.IGenericUpdateQuery
 org.jminiorm.query.orm.IORMCreateTableQuery <|.. org.jminiorm.query.orm.ORMCreateTableQuery
 org.jminiorm.query.orm.AbstractORMQuery <|-- org.jminiorm.query.orm.ORMCreateTableQuery
-org.jminiorm.result.IPrimitiveResult <|.. org.jminiorm.result.PrimitiveResult
-org.jminiorm.result.AbstractResult <|-- org.jminiorm.result.PrimitiveResult
 org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMDeleteQuery
 org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMUpdateQuery
 org.jminiorm.query.IQuery <|.. org.jminiorm.query.AbstractQuery
@@ -635,9 +619,10 @@ org.jminiorm.utils.IPropertyReader <|.. org.jminiorm.utils.RSUtils$MapPropertyRe
 org.jminiorm.utils.RSUtils +.. org.jminiorm.utils.RSUtils$ObjectPropertyReader
 org.jminiorm.utils.IPropertyReader <|.. org.jminiorm.utils.RSUtils$ObjectPropertyReader
 org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMCreateTableQuery
-org.jminiorm.result.IResult <|-- org.jminiorm.result.IObjectResult
 org.jminiorm.query.orm.IORMQuery <|-- org.jminiorm.query.orm.IORMSelectQuery
-org.jminiorm.result.IObjectResult <|-- org.jminiorm.query.orm.IORMSelectQuery
+org.jminiorm.result.object.IObjectResult <|-- org.jminiorm.query.orm.IORMSelectQuery
+org.jminiorm.result.map.IMapResult <|.. org.jminiorm.result.map.MapResult
+org.jminiorm.result.AbstractResult <|-- org.jminiorm.result.map.MapResult
 org.jminiorm.IDatabase <|.. org.jminiorm.Database
 org.jminiorm.AbstractQueryTarget <|-- org.jminiorm.Database
 org.jminiorm.query.generic.IGenericRawQuery <|.. org.jminiorm.query.generic.GenericRawQuery
@@ -659,5 +644,6 @@ javax.persistence.AttributeConverter <|.. org.jminiorm.attributeconverter.EnumOr
 org.jminiorm.dialect.ISQLDialect <|.. org.jminiorm.dialect.GenericSQLDialect
 org.jminiorm.query.IQuery <|-- org.jminiorm.query.orm.IORMQuery
 org.jminiorm.exception.Exception <|-- org.jminiorm.exception.UnexpectedNumberOfItemsException
+org.jminiorm.result.IResult <|-- org.jminiorm.result.map.IMapResult
 org.jminiorm.query.generic.IGenericQuery <|-- org.jminiorm.query.generic.IGenericDeleteQuery
 @enduml
