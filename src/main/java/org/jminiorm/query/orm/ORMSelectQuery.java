@@ -14,6 +14,7 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
 
     private String where;
     private List<Object> params = new ArrayList<>();
+
     private String groupBy;
     private String having;
 
@@ -54,6 +55,18 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
         // Sets the where clause for the id column :
         where = getMapping().getIdColumnMapping().getColumn() + " = ?";
 
+        return this;
+    }
+
+    @Override
+    public IORMSelectQuery<T> groupBy(String groupBy) {
+        this.groupBy = groupBy;
+        return this;
+    }
+
+    @Override
+    public IORMSelectQuery<T> having(String having) {
+        this.having = having;
         return this;
     }
 
@@ -102,5 +115,4 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
         return getQueryTarget().getConfig().getDialect().sqlForSelect(getMapping().getSchema(), columns, tableName, where
                 ,null);
     }
-
 }
