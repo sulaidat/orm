@@ -1,23 +1,24 @@
-package org.jminiorm.resultset;
+package org.jminiorm.result.object;
 
 import org.jminiorm.IQueryTarget;
 import org.jminiorm.attributeconverter.AttributeConverterUtils;
 import org.jminiorm.mapping.ColumnMapping;
 import org.jminiorm.mapping.ORMapping;
+import org.jminiorm.result.AbstractResult;
+import org.jminiorm.result.object.IObjectResult;
 
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
-import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class ObjectResultSet<T> extends AbstractResultSet<T> implements IObjectResultSet<T> {
+public class ObjectResult<T> extends AbstractResult<T> implements IObjectResult<T> {
 
     private Class<T> targetClass;
 
-    public ObjectResultSet(IQueryTarget queryTarget, String sql, List<Object> params,
-            Class<T> targetClass) {
+    public ObjectResult(IQueryTarget queryTarget, String sql, List<Object> params,
+                        Class<T> targetClass) {
         super(queryTarget, sql, params);
         this.targetClass = targetClass;
     }

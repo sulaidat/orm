@@ -1,16 +1,18 @@
-package org.jminiorm.resultset;
+package org.jminiorm.result.map;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jminiorm.IQueryTarget;
+import org.jminiorm.result.AbstractResult;
+import org.jminiorm.result.map.IMapResult;
 
-public class MapResultSet<V> extends AbstractResultSet<Map<String,V>> implements IMapResultSet<V> {
+public class MapResult<V> extends AbstractResult<Map<String,V>> implements IMapResult<V> {
 
     private Class<V> type;
 
-    public MapResultSet(IQueryTarget queryTarget, String sql, List<Object> params, Class<V> type) {
+    public MapResult(IQueryTarget queryTarget, String sql, List<Object> params, Class<V> type) {
         super(queryTarget, sql, params);
         this.type = type;
     }

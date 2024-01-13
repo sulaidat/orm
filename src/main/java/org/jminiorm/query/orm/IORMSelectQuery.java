@@ -1,6 +1,6 @@
 package org.jminiorm.query.orm;
 
-import org.jminiorm.resultset.IObjectResultSet;
+import org.jminiorm.result.object.IObjectResult;
 
 /**
  * Represents a select query that returns objects of a JPA annotated class. The select and from clauses are infered from
@@ -8,7 +8,7 @@ import org.jminiorm.resultset.IObjectResultSet;
  *
  * @param <T>
  */
-public interface IORMSelectQuery<T> extends IORMQuery<T>, IObjectResultSet<T> {
+public interface IORMSelectQuery<T> extends IORMQuery<T>, IObjectResult<T> {
 
     /**
      * Sets the target class

@@ -4,7 +4,7 @@ import org.jminiorm.IQueryTarget;
 import org.jminiorm.exception.DBException;
 import org.jminiorm.exception.UnexpectedNumberOfItemsException;
 import org.jminiorm.mapping.ColumnMapping;
-import org.jminiorm.resultset.IObjectResultSet;
+import org.jminiorm.result.object.IObjectResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,19 +72,19 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
 
     @Override
     public T one() throws UnexpectedNumberOfItemsException, DBException {
-        IObjectResultSet<T> res = getResultSet();
+        IObjectResult<T> res = getResult();
         return res.one();
 //        return getResultSet().one();
     }
 
     @Override
     public T first() throws DBException {
-        return getResultSet().first();
+        return getResult().first();
     }
 
     @Override
     public List<T> list() throws DBException {
-        return getResultSet().list();
+        return getResult().list();
     }
 
     /**
@@ -92,7 +92,7 @@ public class ORMSelectQuery<T> extends AbstractORMQuery<T> implements IORMSelect
      *
      * @return
      */
-    protected IObjectResultSet<T> getResultSet() {
+    protected IObjectResult<T> getResult() {
         return getQueryTarget().select(buildSQL(), params.toArray()).toObject(getTargetClass());
     }
 

@@ -2,7 +2,10 @@ package org.jminiorm.query.generic;
 
 import org.jminiorm.IQueryTarget;
 import org.jminiorm.query.AbstractQuery;
-import org.jminiorm.resultset.*;
+import org.jminiorm.result.map.IMapResult;
+import org.jminiorm.result.map.MapResult;
+import org.jminiorm.result.object.IObjectResult;
+import org.jminiorm.result.object.ObjectResult;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,23 +27,13 @@ public class GenericSelectQuery extends AbstractQuery implements IGenericSelectQ
     }
 
     @Override
-    public <T> IPrimitiveResultSet<T> asPrimitive(Class<T> clazz) {
-        return new PrimitiveResultSet<>(getQueryTarget(), getSQL(), params, clazz);
+    public IMapResult<Object> toMap() {
+        return new MapResult<Object>(getQueryTarget(), getSQL(), params, Object.class);
     }
 
     @Override
-    public IMapResultSet<Object> asMap() {
-        return new MapResultSet<Object>(getQueryTarget(), getSQL(), params, Object.class);
-    }
-
-    @Override
-    public <T> IMapResultSet<T> asMap(Class<T> type) {
-        return new MapResultSet<T>(getQueryTarget(), getSQL(), params, type);
-    }
-
-    @Override
-    public <T> IObjectResultSet<T> toObject(Class<T> clazz) {
-        return new ObjectResultSet<>(getQueryTarget(), getSQL(), params, clazz);
+    public <T> IObjectResult<T> toObject(Class<T> clazz) {
+        return new ObjectResult<>(getQueryTarget(), getSQL(), params, clazz);
     }
 
     protected String getSQL() {

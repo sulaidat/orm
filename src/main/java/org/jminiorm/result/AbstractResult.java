@@ -1,4 +1,4 @@
-package org.jminiorm.resultset;
+package org.jminiorm.result;
 
 import org.jminiorm.IQueryTarget;
 import org.jminiorm.exception.DBException;
@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class AbstractResultSet<T> implements IResultSet<T> {
+public abstract class AbstractResult<T> implements IResult<T> {
 
     private IQueryTarget queryTarget;
     private String sql;
     private List<Object> params;
 
-    public AbstractResultSet(IQueryTarget queryTarget, String sql, List<Object> params) {
+    public AbstractResult(IQueryTarget queryTarget, String sql, List<Object> params) {
         this.queryTarget = queryTarget;
         this.sql = sql;
         this.params = params;
@@ -22,22 +22,22 @@ public abstract class AbstractResultSet<T> implements IResultSet<T> {
 
     @Override
     public T one() throws UnexpectedNumberOfItemsException, DBException {
-        List<T> rs = list();
-        if (rs.size() != 1) throw new UnexpectedNumberOfItemsException(rs.size());
-        else return rs.get(0);
+        List<T> res = list();
+        if (res.size() != 1) throw new UnexpectedNumberOfItemsException(res.size());
+        else return res.get(0);
     }
 
     @Override
     public T first() throws DBException {
-        List<T> rs = list();
-        if (rs.isEmpty()) return null;
-        else return rs.get(0);
+        List<T> res = list();
+        if (res.isEmpty()) return null;
+        else return res.get(0);
     }
 
     @Override
     public List<T> list() throws DBException {
-        List<Map<String, Object>> rawResultSet = queryTarget.executeQuery(sql, params, typeMappings());
-        return rawResultSet.stream().map(this::castRow).collect(Collectors.toList());
+        List<Map<String, Object>> rawResult = queryTarget.executeQuery(sql, params, typeMappings());
+        return rawResult.stream().map(this::castRow).collect(Collectors.toList());
     }
 
     protected IQueryTarget getQueryTarget() {

@@ -2,7 +2,6 @@ package org.jminiorm;
 
 import org.h2.tools.Server;
 import org.jminiorm.dialect.PostgreSQLDialect;
-import org.jminiorm.executor.BatchStatementExecutor;
 import org.jminiorm.executor.DefaultStatementExecutor;
 import org.jminiorm.utils.RSUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -131,7 +130,13 @@ public class TestQueries {
         System.out.println("Created : " + b1);
         db.insert(b1);
         assertNotNull(b1.getId());
+
+
         Bean b2 = db.select(Bean.class).one();
+//        List<Bean> listBean = db.select(Bean.class)
+//                .addColumn(count("last_name"), "count")
+//                .groupby("count").list();
+
         System.out.println("Read in database : " + b2);
         assertTrue(b1.compareWithoutId(b2));
         assertNotSame(b1, b2);
@@ -163,14 +168,16 @@ public class TestQueries {
                 new Bean("b1"),
                 new Bean("b2"),
                 new Bean("b3")));
-        Long countLong = db.select("select count(*) from beans").asPrimitive(Long.class).one();
-        assertEquals(new Long(3), countLong);
-        Integer countInteger = db.select("select count(*) from beans").asPrimitive(Integer.class).one();
-        assertEquals(new Integer(3), countInteger);
-        String countString = db.select("select count(*) from beans").asPrimitive(String.class).one();
-        assertEquals("3", countString);
-        Map<String, Map<String, Object>> resultAsIndexedMaps = RSUtils.index(db.select("select * from beans").asMap()
-                .list(), "short_text");
+//        Long countLong = db.select("select count(*) from beans").asPrimitive(Long.class).one();
+//        assertEquals(new Long(3), countLong);
+//        Integer countInteger = db.select("select count(*) from beans").asPrimitive(Integer.class).one();
+//        assertEquals(new Integer(3), countInteger);
+//        String countString = db.select("select count(*) from beans").asPrimitive(String.class).one();
+//        assertEquals("3", countString);
+
+        Map<String, Map<String, Object>> resultAsIndexedMaps = RSUtils.index(db.select("select * from beans").toMap().list(), "short_text");
+//        Map<String, Map<String, Object>> res = RSUtils.index(db.select("select * from beans").asMap(Bean.class).list(),
+//                "short_text");
         assertEquals(3, resultAsIndexedMaps.size());
         assertEquals("b1", resultAsIndexedMaps.get("b1").get("short_text"));
     }
@@ -180,7 +187,7 @@ public class TestQueries {
         Bean b = new Bean();
         b.setLocalDate(LocalDate.now());
         db.insert(b);
-        Map<String, Object> data = db.select("select localDate from beans").asMap().one();
+        Map<String, Object> data = db.select("select localDate from beans").toMap().one();
         assertEquals(LocalDate.now(), data.get("localDate"));
     }
 

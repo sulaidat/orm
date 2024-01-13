@@ -1,8 +1,7 @@
 package org.jminiorm.query.generic;
 
-import org.jminiorm.resultset.IMapResultSet;
-import org.jminiorm.resultset.IObjectResultSet;
-import org.jminiorm.resultset.IPrimitiveResultSet;
+import org.jminiorm.result.map.IMapResult;
+import org.jminiorm.result.object.IObjectResult;
 
 /**
  * Represents a generic select query, that is, one that may return objects of any type (not necessarily a JPA annotated
@@ -21,33 +20,17 @@ public interface IGenericSelectQuery extends IGenericQuery {
     IGenericSelectQuery sql(String sql, Object... params);
 
     /**
-     * Returns the result set as objects of primitive type T.
-     *
-     * @param clazz
-     * @param <T>
-     * @return
-     */
-    <T> IPrimitiveResultSet<T> asPrimitive(Class<T> clazz);
-
-    /**
      * Returns the result set as Maps String Object.
      *
      * @return
      */
-    IMapResultSet<Object> asMap();
-
-    /**
-     * Returns the result set as Maps String T.
-     *
-     * @return
-     */
-    <T> IMapResultSet<T> asMap(Class<T> type);
+    IMapResult<Object> toMap();
 
     /**
      * Returns the result set as objects of type T.
      *
      * @return
      */
-    <T> IObjectResultSet<T> toObject(Class<T> clazz);
+    <T> IObjectResult<T> toObject(Class<T> clazz);
 
 }

@@ -1,4 +1,4 @@
-package org.jminiorm.resultset;
+package org.jminiorm.result;
 
 import org.jminiorm.exception.DBException;
 import org.jminiorm.exception.UnexpectedNumberOfItemsException;
@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @param <T>
  */
-public interface IResultSet<T> {
+public interface IResult<T> {
 
     /**
      * Extracts the first result of the result set. Throws an exception if there is more than or less than one element
